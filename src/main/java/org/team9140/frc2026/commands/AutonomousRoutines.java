@@ -2,7 +2,7 @@ package org.team9140.frc2026.commands;
 
 import java.util.Optional;
 
-import org.team9140.frc2026.Constants;
+import org.team9140.frc2026.FieldConstants;
 import org.team9140.frc2026.subsystems.Climber;
 import org.team9140.frc2026.subsystems.CommandSwerveDrivetrain;
 import org.team9140.frc2026.subsystems.Hopper;
@@ -67,15 +67,15 @@ public class AutonomousRoutines {
         Pose2d goalPos;
         if(left) {
             if(Util.getAlliance().equals(Optional.of(DriverStation.Alliance.Blue))) {
-                goalPos = Constants.Positions.CLIMB_LEFT_BLUE;
+                goalPos = FieldConstants.Tower.LEFT_UPRIGHT;
             } else {
-                goalPos = Constants.Positions.CLIMB_LEFT_RED;
+                goalPos = FieldConstants.Tower.RED_LEFT_UPRIGHT;
             }
         } else {
             if(Util.getAlliance().equals(Optional.of(DriverStation.Alliance.Blue))) {
-                goalPos = Constants.Positions.CLIMB_RIGHT_BLUE;
+                goalPos = FieldConstants.Tower.RIGHT_UPRIGHT;
             } else {
-                goalPos = Constants.Positions.CLIMB_RIGHT_RED;
+                goalPos = FieldConstants.Tower.RED_RIGHT_UPRIGHT;
             }
         }
         return this.drivetrain.goToPose(() -> goalPos)

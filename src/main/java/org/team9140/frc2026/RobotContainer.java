@@ -13,7 +13,6 @@ import org.team9140.frc2026.subsystems.Intake;
 import org.team9140.frc2026.subsystems.Shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class RobotContainer {

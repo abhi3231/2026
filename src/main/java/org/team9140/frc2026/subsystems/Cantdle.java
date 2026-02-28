@@ -10,6 +10,7 @@ import org.team9140.frc2026.Constants;
 import org.team9140.lib.Util;
 
 import com.ctre.phoenix6.controls.SolidColor;
+import com.ctre.phoenix6.controls.StrobeAnimation;
 import com.ctre.phoenix6.hardware.CANdle;
 import com.ctre.phoenix6.signals.RGBWColor;
 
@@ -27,27 +28,34 @@ public class Cantdle extends SubsystemBase {
 
     private CANdle candle;
 
-    private SolidColor colorcontrol;
+    private SolidColor solidColorControl;
+    private StrobeAnimation blinkingColorControl;
+    
 
     private Cantdle() {
         this.candle = new CANdle(0, Constants.Ports.CANIVORE);
-        colorcontrol = new SolidColor(0, 7);
+        solidColorControl = new SolidColor(0, 7);
+        blinkingColorControl = new StrobeAnimation(0, 7);
 
-        if (Optional.of(DriverStation.Alliance.Red).equals(Util.getAlliance()))
-            this.setColor(RED);
-        else
-            this.setColor(BLUE);
+        this.setSolidColor(getAllianceColor());
     }
 
     public static Cantdle getInstance() {
         return (instance == null) ? instance = new Cantdle() : instance;
     }
 
-    public Command setColor(RGBWColor color) {
+    public Command setSolidColor(RGBWColor color) {
         return this.runOnce(() -> {
-            this.candle.setControl(colorcontrol.withColor(color));
+            this.candle.setControl(solidColorControl.withColor(color));
             this.current = color;
-        }).withName(color.toString());
+        }).withName("Set to solid " + color.toString());
+    }
+
+    public Command setBlinkingColor(RGBWColor color) {
+        return this.runOnce(() -> {
+            this.candle.setControl(blinkingColorControl.withColor(color).withFrameRate(1));
+            this.current = color;
+        }).withName("Set to blinking " + color.toString());
     }
 
     public RGBWColor getAllianceColor() {

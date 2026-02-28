@@ -6,6 +6,8 @@ import java.nio.file.Path;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Filesystem;
 
 public class FieldConstants {
@@ -13,6 +15,74 @@ public class FieldConstants {
     public static final FieldType fieldType = FieldType.ANDYMARK;
     public static final double fieldLength = AprilTagLayoutType.OFFICIAL.getLayout().getFieldLength();
     public static final double fieldWidth = AprilTagLayoutType.OFFICIAL.getLayout().getFieldWidth();
+
+    public static class Hub {
+
+        public static final double width = 1.1938;
+        public static final double height = 1.8288;
+
+        public static final Pose2d centerPoint = new Pose2d(
+                AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(26).get().getX() + width / 2.0,
+                fieldWidth / 2.0, new Rotation2d(0));
+        public static final Pose2d oppCenterPoint = new Pose2d(
+                AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(4).get().getX() + width / 2.0,
+                fieldWidth / 2.0, new Rotation2d(0));
+    }
+
+    public static class Tower {
+
+        public static final double innerOpeningWidth = 0.81915;
+        public static final double frontFaceX = 1.105154;
+
+        public static final Pose2d centerPoint = new Pose2d(
+                frontFaceX, AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(31).get().getY(), new Rotation2d(0));
+
+        public static final Pose2d leftUpright = new Pose2d(
+                frontFaceX,
+                (AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(31).get().getY())
+                        + innerOpeningWidth / 2
+                        + 0.01905,
+                new Rotation2d(0));
+
+        public static final Pose2d rightUpright = new Pose2d(
+                frontFaceX,
+                (AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(31).get().getY())
+                        - innerOpeningWidth / 2
+                        - 0.01905,
+                new Rotation2d(0));
+
+        public static final Pose2d oppCenterPoint = new Pose2d(
+                fieldLength - frontFaceX,
+                AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(15).get().getY(),
+                new Rotation2d(0));
+
+        public static final Pose2d oppLeftUpright = new Pose2d(
+                fieldLength - frontFaceX,
+                (AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(15).get().getY())
+                        + innerOpeningWidth / 2
+                        + 0.01905,
+                new Rotation2d(0));
+        public static final Pose2d oppRightUpright = new Pose2d(
+                fieldLength - frontFaceX,
+                (AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(15).get().getY())
+                        - innerOpeningWidth / 2
+                        - 0.01905,
+                new Rotation2d(0));
+    }
+
+    public static class Lines {
+        public static final double allianceZone = AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(26).get()
+                .getX();
+        public static final double oppAllianceZone = AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(10).get()
+                .getX();
+    }
+
+    public static class FeedingPositions {
+        public static final Pose2d FEEDING_POS_LOWER = new Pose2d(2, 2, new Rotation2d());
+        public static final Pose2d FEEDING_POS_UPPER = new Pose2d(2, 6, new Rotation2d());
+        public static final Pose2d FEEDING_POS_LOWER_RED = new Pose2d(14.540988, 2, new Rotation2d());
+        public static final Pose2d FEEDING_POS_UPPER_RED = new Pose2d(14.540988, 6, new Rotation2d());
+    }
 
     public enum FieldType {
         ANDYMARK("andymark"),

@@ -2,7 +2,6 @@ package org.team9140.frc2026.helpers;
 
 import java.util.Optional;
 
-import org.team9140.frc2026.Constants;
 import org.team9140.frc2026.FieldConstants;
 import org.team9140.lib.Util;
 
@@ -55,22 +54,22 @@ public class AimAlign {
         double ry = robotPos.getY();
         Pose2d position;
         if (Optional.of(DriverStation.Alliance.Red).equals(Util.getAlliance())
-                && rx > Constants.Positions.RED_ALLIANCE_ZONE) {
-            position = Constants.Positions.RED_HOOP_POSITION;
+                && rx > FieldConstants.Lines.oppAllianceZone) {
+            position = FieldConstants.Hub.oppCenterPoint;
         } else if (Optional.of(DriverStation.Alliance.Blue).equals(Util.getAlliance())
-                && rx < Constants.Positions.BLUE_ALLIANCE_ZONE) {
-            position = Constants.Positions.BLUE_HOOP_POSITION;
+                && rx < FieldConstants.Lines.allianceZone) {
+            position = FieldConstants.Hub.centerPoint;
         } else if (Optional.of(DriverStation.Alliance.Red).equals(Util.getAlliance())) {
             if (ry < FieldConstants.fieldWidth/2) {
-                position = Constants.Positions.FEEDING_POS_LOWER_RED;
+                position = FieldConstants.FeedingPositions.FEEDING_POS_LOWER_RED;
             } else {
-                position = Constants.Positions.FEEDING_POS_UPPER_RED;
+                position = FieldConstants.FeedingPositions.FEEDING_POS_UPPER_RED;
             }
         } else {
             if (ry < FieldConstants.fieldWidth/2) {
-                position = Constants.Positions.FEEDING_POS_LOWER;
+                position = FieldConstants.FeedingPositions.FEEDING_POS_LOWER;
             } else {
-                position = Constants.Positions.FEEDING_POS_UPPER;
+                position = FieldConstants.FeedingPositions.FEEDING_POS_UPPER;
             }
         }
         return position;

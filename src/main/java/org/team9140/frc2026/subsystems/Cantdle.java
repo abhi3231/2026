@@ -16,15 +16,7 @@ import com.ctre.phoenix6.signals.RGBWColor;
 
 public class Cantdle extends SubsystemBase {
     private static Cantdle instance;
-
-    public static final RGBWColor RED = new RGBWColor(255, 0, 0);
-    public static final RGBWColor GREEN = new RGBWColor(0, 255, 0);
-    public static final RGBWColor BLUE = new RGBWColor(0, 0, 255);
-    public static final RGBWColor PINK = new RGBWColor(245, 110, 229);
-    public static final RGBWColor ORANGE = new RGBWColor(255, 157, 0);
-    public static final RGBWColor PURPLE = new RGBWColor(227, 18, 254);
-    public static final RGBWColor OFF = new RGBWColor(0, 0, 0);
-    public RGBWColor current = new RGBWColor(0, 0, 0);
+    public RGBWColor currentColor = new RGBWColor(0, 0, 0);
 
     private CANdle candle;
 
@@ -37,32 +29,32 @@ public class Cantdle extends SubsystemBase {
         solidColorControl = new SolidColor(0, 7);
         blinkingColorControl = new StrobeAnimation(0, 7);
 
-        this.setSolidColor(getAllianceColor());
+        this.setToSolidColor(getAllianceColor());
     }
 
     public static Cantdle getInstance() {
         return (instance == null) ? instance = new Cantdle() : instance;
     }
 
-    public Command setSolidColor(RGBWColor color) {
+    public Command setToSolidColor(RGBWColor color) {
         return this.runOnce(() -> {
             this.candle.setControl(solidColorControl.withColor(color));
-            this.current = color;
+            this.currentColor = color;
         }).withName("Set to solid " + color.toString());
     }
 
-    public Command setBlinkingColor(RGBWColor color) {
+    public Command setToBlinkingColor(RGBWColor color) {
         return this.runOnce(() -> {
-            this.candle.setControl(blinkingColorControl.withColor(color).withFrameRate(1));
-            this.current = color;
+            this.candle.setControl(blinkingColorControl.withColor(color).withFrameRate(Constants.Cantdle.BLINK_FREQUENCY));
+            this.currentColor = color;
         }).withName("Set to blinking " + color.toString());
     }
 
     public RGBWColor getAllianceColor() {
         if (Optional.of(DriverStation.Alliance.Blue).equals(Util.getAlliance())) {
-            return BLUE;
+            return Constants.Cantdle.BLUE;
         } else {
-            return RED;
+            return Constants.Cantdle.RED;
         }
     }
 

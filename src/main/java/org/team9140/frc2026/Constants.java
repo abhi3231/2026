@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import org.team9140.frc2026.generated.TunerConstants;
 
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.signals.RGBWColor;
 
 public class Constants {
     public static class Ports {
@@ -21,6 +22,14 @@ public class Constants {
     }
 
     public static class Cantdle {
+        public static final RGBWColor RED = new RGBWColor(255, 0, 0);
+        public static final RGBWColor GREEN = new RGBWColor(0, 255, 0);
+        public static final RGBWColor BLUE = new RGBWColor(0, 0, 255);
+        public static final RGBWColor PINK = new RGBWColor(245, 110, 229);
+        public static final RGBWColor ORANGE = new RGBWColor(255, 157, 0);
+        public static final RGBWColor PURPLE = new RGBWColor(227, 18, 254);
+        public static final RGBWColor OFF = new RGBWColor(0, 0, 0);
+        public static final double BLINK_FREQUENCY = 1.0;
     }
 
     public static class Drive {

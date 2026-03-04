@@ -13,12 +13,14 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TorqueCurrentConfigs;
 import com.ctre.phoenix6.controls.CoastOut;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
@@ -47,6 +49,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class Shooter extends SubsystemBase {
     private final TalonFX yawMotor = new TalonFX(Constants.Ports.YAW_MOTOR, Constants.Ports.CANIVORE);
     private final TalonFX shooterMotor = new TalonFX(Constants.Ports.SHOOTER_MOTOR, Constants.Ports.CANIVORE);
+    private final TalonFX shooterFollower = new TalonFX(Constants.Ports.SHOOTER_FOLLOWER_MOTOR, Constants.Ports.CANIVORE);
 
     private double yawTargetPosition = 0;
     private double shooterTargetVelocity = 0;
@@ -107,6 +110,7 @@ public class Shooter extends SubsystemBase {
 
         yawMotor.getConfigurator().apply(yawConfig);
         shooterMotor.getConfigurator().apply(shooterConfig);
+        shooterFollower.setControl(new Follower(Constants.Ports.SHOOTER_MOTOR, MotorAlignmentValue.Aligned));
 
         Mechanism2d yawMech = new Mechanism2d(1, 1);
         MechanismRoot2d yawRoot = yawMech.getRoot("yawArm Root", 1.5, 0.5);

@@ -19,6 +19,7 @@ public class Constants {
         public static final int CLIMBER_MOTOR = 14;
         public static final int HOPPER_SPINNER_MOTOR = 15;
         public static final int HOPPER_FEEDER_MOTOR = 16;
+        public static final int SHOOTER_FOLLOWER_MOTOR = 17;
     }
 
     public static class Cantdle {

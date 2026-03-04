@@ -172,6 +172,15 @@ public class Shooter extends SubsystemBase {
         }).withName("Continuously Aim Automatically");
     }
 
+    public Command shoot(Supplier<SwerveDriveState> chassisStateSupplier) {
+        return this.run(() -> {
+            Pose2d chassisPose = chassisStateSupplier.get().Pose;
+            Translation2d targetPose = AimAlign.getZone(chassisPose).getTranslation();
+            this.shooterMotor.setControl(shooterSpeedControl.withVelocity(
+                    AimAlign.getRequiredSpeed(chassisPose, targetPose)));
+        }).withName("Shoot without aiming");
+    }
+
     public Command idle() {
         return this.runOnce(() -> {
             if (this.isManual)

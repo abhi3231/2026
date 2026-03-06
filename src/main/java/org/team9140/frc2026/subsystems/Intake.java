@@ -82,7 +82,7 @@ public class Intake extends SubsystemBase {
                 .withMotorOutput(extendMotorOutputConfigs)
                 .withMotionMagic(motionMagicConfigs)
                 .withSoftwareLimitSwitch(softwareLimitSwitchConfigs)
-                .withSlot0(new Slot0Configs().withKP(0.5))
+                .withSlot0(new Slot0Configs().withKP(Constants.Intake.EXTEND_KP))
                 .withFeedback(new FeedbackConfigs().withSensorToMechanismRatio(Constants.Intake.EXTENSION_GEAR_RATIO));
 
         this.rollerMotor.getConfigurator().apply(spinMotorConfigs);

@@ -115,6 +115,7 @@ public class Constants {
 
         public static final double MOTION_MAGIC_CRUISE_VELOCITY = 10;
         public static final double MOTION_MAGIC_ACCELERATION = 20;
+        public static final double EXTEND_KP = 0.5;
         public static final double FORWARD_SOFT_LIMIT_THRESHOLD = 100;
         public static final double REVERSE_SOFT_LIMIT_THRESHOLD = 0;
 

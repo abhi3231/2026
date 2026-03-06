@@ -132,11 +132,9 @@ public class Shooter extends SubsystemBase {
         return this.runOnce(() -> {
             this.isManual = true;
             this.shooterMotor.setControl(new VoltageOut(12.0));
-        }).andThen(this.run(() -> {
             this.yawMotor.setControl(new VoltageOut(
                     left ? Constants.Shooter.ADJUST_VOLTAGE : -Constants.Shooter.ADJUST_VOLTAGE));
-        })).finallyDo(() -> {
-            this.shooterMotor.setControl(new CoastOut());
+        }).andThen(this.run(() -> {})).finallyDo(() -> {
             this.yawMotor.setControl(new StaticBrake());
         }).withName("Adjust Manually");
     }
@@ -177,12 +175,14 @@ public class Shooter extends SubsystemBase {
             // point turret forward / starting orientation / whatever
             this.yawMotor.setControl(yawMotorControl.withPosition(0));
             this.shooterMotor.setControl(new VoltageOut(Constants.Shooter.IDLE_VOLTAGE));
-        }).withName("Idle");
+        }).andThen(this.run(() -> {})).withName("Idle");
     }
 
     // make this default command
     public Command off() {
         return this.runOnce(() -> {
+            if (this.isManual) 
+                return;
             this.shooterMotor.setControl(new CoastOut());
             this.yawMotor.setControl(new StaticBrake());
         }).withName("Shooter Off");

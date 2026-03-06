@@ -58,6 +58,7 @@ public class Constants {
         public static final double HEADING_CONTROLLER_D = 0.03; // 0.04
 
         public static final double REACHEDPOSE_DEBOUNCE = 0.5;
+        public static final double BRAKE_IDLE_TIME = 6.0;
 
     }
 

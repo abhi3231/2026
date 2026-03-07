@@ -3,17 +3,12 @@ package org.team9140.frc2026.subsystems;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.configs.*;
 import org.team9140.frc2026.Constants;
 import org.team9140.frc2026.helpers.AimAlign;
 import org.team9140.lib.Util;
 
 import com.ctre.phoenix6.Utils;
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.configs.TorqueCurrentConfigs;
 import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
@@ -53,9 +48,6 @@ public class Shooter extends SubsystemBase {
     private final TalonFX shooterMotor = new TalonFX(Constants.Ports.SHOOTER_MOTOR, Constants.Ports.CANIVORE);
     private final TalonFX shooterFollower = new TalonFX(Constants.Ports.SHOOTER_FOLLOWER_MOTOR,
             Constants.Ports.CANIVORE);
-
-    private double yawTargetPosition = 0;
-    private double shooterTargetVelocity = 0;
 
     private final MotionMagicTorqueCurrentFOC yawMotorControl = new MotionMagicTorqueCurrentFOC(0).withSlot(0);
     private final VelocityTorqueCurrentFOC shooterSpeedControl = new VelocityTorqueCurrentFOC(0).withSlot(0);
@@ -101,6 +93,12 @@ public class Shooter extends SubsystemBase {
                 .withPeakForwardTorqueCurrent(Constants.Shooter.PEAK_FORWARD_TORQUE)
                 .withPeakReverseTorqueCurrent(0.0);
 
+        SoftwareLimitSwitchConfigs yawSoftwareLimitSwitchConfigs = new SoftwareLimitSwitchConfigs()
+                .withForwardSoftLimitThreshold(Constants.Shooter.FORWARD_SOFT_LIMIT_THRESHOLD)
+                .withForwardSoftLimitEnable(true)
+                .withReverseSoftLimitThreshold(Constants.Shooter.REVERSE_SOFT_LIMIT_THRESHOLD)
+                .withReverseSoftLimitEnable(true);
+
         CurrentLimitsConfigs shooterCurrentLimits = new CurrentLimitsConfigs()
                 .withStatorCurrentLimit(80)
                 .withStatorCurrentLimitEnable(true)
@@ -110,7 +108,8 @@ public class Shooter extends SubsystemBase {
         TalonFXConfiguration yawConfig = new TalonFXConfiguration()
                 .withMotionMagic(yawMMConfigs)
                 .withSlot0(yawSlot0Configs)
-                .withMotorOutput(yawMotorOutputConfigs);
+                .withMotorOutput(yawMotorOutputConfigs)
+                .withSoftwareLimitSwitch(yawSoftwareLimitSwitchConfigs);
 
         TalonFXConfiguration shooterConfig = new TalonFXConfiguration()
                 .withSlot0(shooterSlot0Configs)
@@ -219,13 +218,24 @@ public class Shooter extends SubsystemBase {
         }));
     }
 
+    private double targetYawRateOfChange = 0;
+    private double oldTargetYaw = this.yawMotorControl.Position;
+    private double timeSinceOldTargetYawUpdate;
+
     @Override
     public void periodic() {
+        targetYawRateOfChange = (this.yawMotorControl.Position - this.oldTargetYaw) / (Utils.getCurrentTimeSeconds() - this.timeSinceOldTargetYawUpdate);
+        oldTargetYaw = this.yawMotorControl.Position;
+        timeSinceOldTargetYawUpdate = Utils.getCurrentTimeSeconds();
+
         // all these are in rotations per second
         SmartDashboard.putNumber("Yaw Angle", yawMotor.getPosition(true).getValueAsDouble());
-        SmartDashboard.putNumber("Yaw Target Position", this.yawTargetPosition / Math.PI / 2.0);
+        SmartDashboard.putNumber("Yaw Target Position", this.yawMotorControl.Position);
         SmartDashboard.putNumber("Shooter Velocity", shooterMotor.getVelocity(true).getValueAsDouble());
-        SmartDashboard.putNumber("Shooter Target Velocity", this.shooterTargetVelocity / Math.PI / 2.0);
+        SmartDashboard.putNumber("Shooter Target Velocity", this.shooterSpeedControl.Velocity / Math.PI / 2.0);
+        SmartDashboard.putBoolean("Yaw Is At Position", this.yawIsAtPosition.getAsBoolean());
+        SmartDashboard.putBoolean("Shooter Is At Velocity", this.shooterIsAtVelocity.getAsBoolean());
+        SmartDashboard.putBoolean("Yaw Will Overturn Soon", this.yawWillOverturnSoon.getAsBoolean());
     }
 
     private static final double kSimLoopPeriod = 0.004; // 4 ms
@@ -296,9 +306,11 @@ public class Shooter extends SubsystemBase {
 
     public final Trigger yawIsAtPosition = new Trigger(
             () -> Util.epsilonEquals(this.yawMotor.getPosition(false).getValueAsDouble(),
-                    this.yawTargetPosition));
+                    this.yawMotorControl.Position));
 
     public final Trigger shooterIsAtVelocity = new Trigger(
             () -> Util.epsilonEquals(this.shooterMotor.getVelocity(false).getValueAsDouble(),
-                    this.shooterTargetVelocity));
+                    this.shooterSpeedControl.Velocity));
+
+    public final Trigger yawWillOverturnSoon = new Trigger(() -> this.yawMotorControl.Position + this.targetYawRateOfChange * Constants.Shooter.OVERTURN_LOOKAHEAD_TIME > Constants.Shooter.FORWARD_SOFT_LIMIT_THRESHOLD || this.yawMotorControl.Position + this.targetYawRateOfChange * Constants.Shooter.OVERTURN_LOOKAHEAD_TIME < Constants.Shooter.REVERSE_SOFT_LIMIT_THRESHOLD);
 }

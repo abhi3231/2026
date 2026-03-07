@@ -80,7 +80,11 @@ public class Constants {
         public static final double YAW_KI = 0;
         public static final double YAW_KD = 0;
 
+        public static final double FORWARD_SOFT_LIMIT_THRESHOLD = 0.25;
+        public static final double REVERSE_SOFT_LIMIT_THRESHOLD = -0.25;
+
         public static final double ADJUST_VOLTAGE = 2.0;
+        public static final double OVERTURN_LOOKAHEAD_TIME = 2.0;
     }
 
     public static class Climber {

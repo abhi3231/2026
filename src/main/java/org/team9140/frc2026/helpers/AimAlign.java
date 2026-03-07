@@ -60,13 +60,13 @@ public class AimAlign {
                 && rx < FieldConstants.Lines.BLUE_ALLIANCE_ZONE) {
             position = FieldConstants.Hub.CENTER_POINT;
         } else if (Optional.of(DriverStation.Alliance.Red).equals(Util.getAlliance())) {
-            if (ry < FieldConstants.FIELD_WIDTH/2) {
+            if (ry < FieldConstants.FIELD_WIDTH / 2) {
                 position = FieldConstants.FeedingPositions.FEEDING_POS_LOWER_RED;
             } else {
                 position = FieldConstants.FeedingPositions.FEEDING_POS_UPPER_RED;
             }
         } else {
-            if (ry < FieldConstants.FIELD_WIDTH/2) {
+            if (ry < FieldConstants.FIELD_WIDTH / 2) {
                 position = FieldConstants.FeedingPositions.FEEDING_POS_LOWER;
             } else {
                 position = FieldConstants.FeedingPositions.FEEDING_POS_UPPER;

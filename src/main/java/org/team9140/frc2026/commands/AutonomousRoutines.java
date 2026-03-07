@@ -26,7 +26,7 @@ public class AutonomousRoutines {
     private final Climber climber = Climber.getInstance();
     private final Hopper hopper = Hopper.getInstance();
 
-    private final SendableChooser<Command> autoChooser = new SendableChooser<>();
+    private final SendableChooser<String> autoChooser = new SendableChooser<>();
 
     private static AutonomousRoutines instance;
 
@@ -36,17 +36,30 @@ public class AutonomousRoutines {
 
     private AutonomousRoutines(CommandSwerveDrivetrain drivetrain) {
         this.drivetrain = drivetrain;
-        autoChooser.setDefaultOption("Do Nothing", doNothing());
-        autoChooser.addOption("Shoot Preload", shootPreload(3));
-        autoChooser.addOption("Climb Left", climb(true));
-        autoChooser.addOption("Climb Right", climb(false));
-        autoChooser.addOption("Sweep Middle From Left", sweepMiddleFromLeft());
-        autoChooser.addOption("Sweep Middle From Right", sweepMiddleFromRight());
+        autoChooser.setDefaultOption("Do Nothing", "nothing");
+        autoChooser.addOption("Shoot Preload", "preload");
+        autoChooser.addOption("Climb Left", "climb_left");
+        autoChooser.addOption("Climb Right", "climb_right");
+        autoChooser.addOption("Sweep Middle From Left", "sweep_middle_left");
+        autoChooser.addOption("Sweep Middle From Right", "sweep_middle_right");
         SmartDashboard.putData(autoChooser);
     }
 
-    public SendableChooser<Command> getAutoChooser() {
-        return autoChooser;
+    public Command getCommand() {
+        switch (autoChooser.getSelected()) {
+            case "preload":
+                return shootPreload(3);
+            case "climb_left":
+                return climb(true);
+            case "climb_right":
+                return climb(false);
+            case "sweep_middle_left":
+                return sweepMiddleFromLeft();
+            case "sweep_middle_right":
+                return sweepMiddleFromRight();
+            default:
+                return doNothing();
+        }
     }
 
     public Command doNothing() {

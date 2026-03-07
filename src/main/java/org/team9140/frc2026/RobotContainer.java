@@ -25,6 +25,7 @@ public class RobotContainer {
 
   private final CommandXboxController controller = new CommandXboxController(0);
   private final SwerveTelemetry logger = new SwerveTelemetry(drivetrain, Constants.Drive.MAX_TELEOP_VELOCITY);
+  private final AutonomousRoutines autoRoutines;
 
   private final Vision limeA = new Vision(Constants.Vision.CAMERA_NAMES[0], this.drivetrain::acceptVisionMeasurement, Constants.Vision.ROBOT_TO_CAM[0]);
   private final Vision limeB = new Vision(Constants.Vision.CAMERA_NAMES[1], this.drivetrain::acceptVisionMeasurement, Constants.Vision.ROBOT_TO_CAM[1]);
@@ -34,9 +35,7 @@ public class RobotContainer {
     limeB.setIMUMode(1);
 
     configureBindings();
-
-    limeA.start();
-    limeB.start();
+    autoRoutines = AutonomousRoutines.getInstance(drivetrain);
   }
 
   private void configureBindings() {
@@ -60,6 +59,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return AutonomousRoutines.getInstance(drivetrain).getAutoChooser().getSelected();
+    return autoRoutines.getCommand();
   }
 }

@@ -246,5 +246,8 @@
     {"t":5.43262, "x":1.8052, "y":5.48065, "heading":-3.07374, "vx":-4.89724, "vy":0.00268, "omega":0.00005, "ax":0.0, "ay":0.0, "alpha":0.0, "fx":[0.0,0.0,0.0,0.0], "fy":[0.0,0.0,0.0,0.0]}],
   "splits":[0]
  },
- "events":[]
+ "events":[
+   {"name":"intakeOff", "from":{"target":5, "targetTimestamp":4.57939, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"intakeOn"}}},
+   {"name":"intakeOn", "from":{"target":2, "targetTimestamp":2.12505, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"intakeOff"}}},
+   {"name":"aim", "from":{"target":6, "targetTimestamp":5.43262, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"aim"}}}]
 }

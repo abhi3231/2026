@@ -3,29 +3,33 @@ package org.team9140.lib;
 import static org.team9140.lib.Util.rotationEpsilonEquals;
 
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import choreo.Choreo;
+import choreo.trajectory.EventMarker;
 import choreo.trajectory.SwerveSample;
 import choreo.trajectory.Trajectory;
 import choreo.util.ChoreoAllianceFlipUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.event.EventLoop;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 // TODO: Support path splits
 public class FollowPath {
+
     private final EventLoop loop;
     private final Timer timer;
     private final DriverStation.Alliance alliance;
     private final Trigger activeTrigger;
+    private final TreeMap<String, Trigger> eventTimes;
 
     private Trajectory<SwerveSample> trajectory;
     private boolean active = false;
@@ -37,7 +41,8 @@ public class FollowPath {
 
     private final Pose2d finalPose;
 
-    public FollowPath(String name, Supplier<Pose2d> poseSupplier, Consumer<SwerveSample> sampleConsumer, DriverStation.Alliance alliance, Subsystem requirement) {
+    public FollowPath(String name, Supplier<Pose2d> poseSupplier, Consumer<SwerveSample> sampleConsumer,
+            DriverStation.Alliance alliance, Subsystem requirement) {
         Choreo.<SwerveSample>loadTrajectory(name)
                 .ifPresent(trajectory -> this.trajectory = alliance.equals(DriverStation.Alliance.Blue) ? trajectory
                         : trajectory.flipped());
@@ -45,6 +50,7 @@ public class FollowPath {
         this.loop = new EventLoop();
         this.timer = new Timer();
         this.alliance = alliance;
+        this.eventTimes = new TreeMap<>();
 
         this.activeTrigger = new Trigger(loop, () -> this.active);
 
@@ -54,8 +60,24 @@ public class FollowPath {
         this.requirement = requirement;
 
         this.finalPose = this.trajectory.getFinalPose(false).get();
+        for (EventMarker e : this.trajectory.events()) {
+            this.eventTimes.put(e.event, atTime(e.timestamp));
+            System.out.println("Added event " + e.event + " at time " + e.timestamp);
+
+        }
     }
 
+    public TreeMap<String, Trigger> getEvents() {
+        return eventTimes;
+    }
+
+    public Trigger atEventTime(String eventName) {
+        return this.eventTimes.get(eventName);
+    }
+
+    public Trigger removeEvent(String eventName) {
+        return this.eventTimes.remove(eventName);
+    }
     public Trigger atTime(double timestamp) {
         return new Trigger(
                 loop,
@@ -130,7 +152,8 @@ public class FollowPath {
                 interrupted -> {
                     this.active = false;
                 },
-                () -> (this.timer.hasElapsed(this.trajectory.getTotalTime())) && Util.epsilonEquals(poseSupplier.get(), getFinalPose()),
+                () -> (this.timer.hasElapsed(this.trajectory.getTotalTime()))
+                        && Util.epsilonEquals(poseSupplier.get(), getFinalPose()),
                 requirement);
     }
 }

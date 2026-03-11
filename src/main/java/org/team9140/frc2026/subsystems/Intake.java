@@ -92,8 +92,6 @@ public class Intake extends SubsystemBase {
         if (Utils.isSimulation()) {
             startSimThread();
         }
-
-        this.setDefaultCommand(off());
     }
 
     public static Intake getInstance() {
@@ -152,7 +150,9 @@ public class Intake extends SubsystemBase {
     }
 
     public Command off() {
-        return this.setRollerSpeed(Constants.Intake.INTAKE_OFF)
+        return this.runOnce(() -> {
+            setRollerSpeed(Constants.Intake.INTAKE_OFF);
+        })
                 .withName("Set Intake Arm Roller Speed to Off");
     }
 

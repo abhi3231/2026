@@ -45,7 +45,7 @@ public class RobotContainer {
         .onFalse(this.intake.off().alongWith(this.hopper.off()));
     this.controller.a().whileTrue(this.shooter.tuningSpeed(() -> SmartDashboard.getNumber("RPM", 3500)));
     this.controller.x().onTrue(this.shooter.idle());
-    this.controller.rightTrigger().whileTrue(this.hopper.feed());
+    this.controller.rightTrigger().onTrue(this.hopper.feed()).onFalse(this.hopper.off());
     this.controller.back().whileTrue(this.shooter.manualLeft());
     this.controller.start().whileTrue(this.shooter.manualRight());
     this.controller.y().onTrue(this.climber.extend());

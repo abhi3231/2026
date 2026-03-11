@@ -1,5 +1,6 @@
 package org.team9140.frc2026.subsystems;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
@@ -40,7 +41,7 @@ public class Intake extends SubsystemBase {
             .append(new MechanismLigament2d("intakeSlide", Constants.Intake.LIGAMENT_LENGTH, 0));
 
     private Intake() {
-        this.rollerMotor = new TalonFX(Constants.Ports.INTAKE_SPIN_MOTOR, Constants.Ports.CANIVORE);
+        this.rollerMotor = new TalonFX(Constants.Ports.INTAKE_SPIN_MOTOR, CANBus.roboRIO());
         this.extendMotor = new TalonFX(Constants.Ports.INTAKE_EXTEND_MOTOR, Constants.Ports.CANIVORE);
 
         CurrentLimitsConfigs rollerCurrentLimits = new CurrentLimitsConfigs()

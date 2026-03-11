@@ -3,6 +3,7 @@ package org.team9140.frc2026.commands;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Optional;
+
 import org.team9140.frc2026.FieldConstants;
 import org.team9140.frc2026.subsystems.Climber;
 import org.team9140.frc2026.subsystems.CommandSwerveDrivetrain;
@@ -49,7 +50,10 @@ public class AutonomousRoutines {
         autoChooser.addOption("Sweep Middle From Left", "sweep_middle_left");
         autoChooser.addOption("Sweep Middle From Right", "sweep_middle_right");
         SmartDashboard.putData(autoChooser);
-        namedCommands.put("aim", shooter.aim(() -> this.drivetrain.getState()));
+        namedCommands.put("shoot",
+                shooter.aim(() -> this.drivetrain.getState())
+                        .until(shooter.yawIsAtPosition.and(shooter.shooterIsAtVelocity)).andThen(hopper.feed())
+                        .andThen(new WaitCommand(3)).andThen(hopper.off()).andThen(shooter.idle()));
         namedCommands.put("intakeOn", intake.intake());
         namedCommands.put("intakeOff", intake.off());
     }
@@ -106,7 +110,7 @@ public class AutonomousRoutines {
     public void bindEventCommands(FollowPath path) {
         for (Entry<String, Trigger> entry : path.getEvents().entrySet()) {
             String name = entry.getKey();
-            Trigger currTrigger  = entry.getValue();
+            Trigger currTrigger = entry.getValue();
             Command currCommand = namedCommands.get(name);
             if (currCommand != null) {
                 currTrigger.onTrue(Commands.runOnce(() -> {
@@ -116,10 +120,12 @@ public class AutonomousRoutines {
             }
         }
     }
+
     public Command sweepMiddleFromRight() {
         FollowPath path = new FollowPath("crossandsweep_Blue_Right", () -> this.drivetrain.getState().Pose,
                 this.drivetrain::followSample, Util.getAlliance().get(), drivetrain);
         bindEventCommands(path);
+        drivetrain.resetPose(path.getInitialPose());
         return path.gimmeCommand();
     }
 
@@ -127,6 +133,7 @@ public class AutonomousRoutines {
         FollowPath path = new FollowPath("crossandsweep_Blue_Left", () -> this.drivetrain.getState().Pose,
                 this.drivetrain::followSample, Util.getAlliance().get(), drivetrain);
         bindEventCommands(path);
+        drivetrain.resetPose(path.getInitialPose());
         return path.gimmeCommand();
     }
 }

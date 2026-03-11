@@ -248,6 +248,6 @@
  },
  "events":[
    {"name":"intakeOff", "from":{"target":5, "targetTimestamp":4.57939, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"intakeOn"}}},
-   {"name":"intakeOn", "from":{"target":2, "targetTimestamp":2.12505, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"intakeOff"}}},
-   {"name":"aim", "from":{"target":6, "targetTimestamp":5.43262, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"aim"}}}]
+   {"name":"shoot", "from":{"target":6, "targetTimestamp":5.43262, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"shoot"}}},
+   {"name":"intakeOn", "from":{"target":1, "targetTimestamp":1.32274, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"intakeOn"}}}]
 }

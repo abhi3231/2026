@@ -35,6 +35,10 @@ public class RobotContainer {
     limeB.setIMUMode(1);
 
     configureBindings();
+
+    limeA.start();
+    limeB.start();
+    
     autoRoutines = AutonomousRoutines.getInstance(drivetrain);
   }
 

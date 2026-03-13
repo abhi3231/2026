@@ -50,12 +50,15 @@ public class AutonomousRoutines {
         autoChooser.addOption("Sweep Middle From Depot", "sweep_middle_left");
         autoChooser.addOption("Sweep Middle From Outpost", "sweep_middle_right");
         SmartDashboard.putData(autoChooser);
-        namedCommands.put("shoot",
-                shooter.aim(() -> this.drivetrain.getState())
-                        .until(shooter.yawIsAtPosition.and(shooter.shooterIsAtVelocity)).andThen(hopper.feed())
-                        .andThen(new WaitCommand(3)).andThen(hopper.off()).andThen(shooter.idle()));
+        namedCommands.put("shoot", getShootCommand());
         namedCommands.put("intakeOn", intake.intake());
         namedCommands.put("intakeOff", intake.off());
+    }
+
+    private Command getShootCommand() {
+        return shooter.aim(() -> this.drivetrain.getState())
+                .until(shooter.yawIsAtPosition.and(shooter.shooterIsAtVelocity)).andThen(hopper.feed())
+                .andThen(new WaitCommand(3)).andThen(hopper.off()).andThen(shooter.idle());
     }
 
     public Command getCommand() {
@@ -124,16 +127,16 @@ public class AutonomousRoutines {
     public Command sweepMiddleFromRight() {
         FollowPath path = new FollowPath("crossandsweep_Blue_Right", () -> this.drivetrain.getState().Pose,
                 this.drivetrain::followSample, Util.getAlliance().get(), drivetrain);
-        bindEventCommands(path);
         drivetrain.resetPose(path.getInitialPose());
-        return namedCommands.get("shoot").andThen(path.gimmeCommand());
+        bindEventCommands(path);
+        return getShootCommand().andThen(path.gimmeCommand());
     }
 
     public Command sweepMiddleFromLeft() {
         FollowPath path = new FollowPath("crossandsweep_Blue_Left", () -> this.drivetrain.getState().Pose,
                 this.drivetrain::followSample, Util.getAlliance().get(), drivetrain);
-        bindEventCommands(path);
         drivetrain.resetPose(path.getInitialPose());
-        return namedCommands.get("shoot").andThen(path.gimmeCommand());
+        bindEventCommands(path);
+        return getShootCommand().andThen(path.gimmeCommand());
     }
 }

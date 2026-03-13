@@ -150,9 +150,7 @@ public class Intake extends SubsystemBase {
     }
 
     public Command off() {
-        return this.runOnce(() -> {
-            setRollerSpeed(Constants.Intake.INTAKE_OFF);
-        })
+        return this.setRollerSpeed(Constants.Intake.INTAKE_OFF)
                 .withName("Set Intake Arm Roller Speed to Off");
     }
 

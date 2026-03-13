@@ -26,7 +26,8 @@
     {"x":{"exp":"1.9330073595046997 m", "val":1.9330073595046997}, "y":{"exp":"2.5414774417877197 m", "val":2.5414774417877197}, "heading":{"exp":"pi rad", "val":3.141592653589793}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
   "constraints":[
     {"from":"last", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
-    {"from":"first", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true}],
+    {"from":"first", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
+    {"from":3, "to":3, "data":{"type":"PointAt", "props":{"x":{"exp":"0 m", "val":0.0}, "y":{"exp":"0 m", "val":0.0}, "tolerance":{"exp":"1 deg", "val":0.017453292519943295}, "flip":false}}, "enabled":true}],
   "targetDt":{
    "exp":"0.05 s",
    "val":0.05

@@ -10,6 +10,7 @@ import java.util.function.Supplier;
 import org.team9140.frc2026.Constants;
 import org.team9140.frc2026.Vision;
 import org.team9140.frc2026.generated.TunerConstants.TunerSwerveDrivetrain;
+import org.team9140.frc2026.helpers.AimAlign;
 import org.team9140.frc2026.helpers.LimelightHelpers.PoseEstimate;
 import org.team9140.frc2026.helpers.LimelightHelpers.RawFiducial;
 import org.team9140.lib.Util;
@@ -19,7 +20,6 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest.SwerveDriveBrake;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
@@ -201,8 +201,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     @Override
     public void periodic() {
-        // SwerveDriveState state = this.getState();
-        // targetPose = AimAlign.getZone(state.Pose);
+        SwerveDriveState state = this.getState();
+        targetPose = AimAlign.getZone(state.Pose);
+        Pose2d turretPose = state.Pose.plus(Constants.Turret.POSITION_TO_ROBOT);
+        SmartDashboard.putNumber("distance to hub", turretPose.getTranslation().minus(AimAlign.getZone(turretPose).getTranslation()).getNorm());
         // if (this.targetPose != null) {
         //     targetPoseDecomposed[0] = this.targetPose.getX();
         //     targetPoseDecomposed[1] = this.targetPose.getY();

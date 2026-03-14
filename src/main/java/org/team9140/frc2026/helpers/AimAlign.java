@@ -12,7 +12,6 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AimAlign {
     private static InterpolatingDoubleTreeMap lookupMotorSpeedFromDistance = new InterpolatingDoubleTreeMap();
@@ -48,7 +47,6 @@ public class AimAlign {
 
     public static double getRequiredSpeed(Pose2d turretPose, Translation2d effectivePose) {
         double distance = turretPose.getTranslation().minus(effectivePose).getNorm();
-        SmartDashboard.putNumber("estimatedDistance", distance);
         return lookupMotorSpeedFromDistance.get(distance);
     }
 

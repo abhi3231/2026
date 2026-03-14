@@ -37,13 +37,13 @@ public class RobotContainer {
     limeA.setIMUMode(1);
     limeB.setIMUMode(1);
     driveCommand = drivetrain.teleopDrive(controller::getLeftX, controller::getLeftY,
-            controller::getRightX);
+        controller::getRightX);
 
     configureBindings();
 
     limeA.start();
     limeB.start();
-    
+
     autoRoutines = AutonomousRoutines.getInstance(drivetrain);
   }
 
@@ -69,6 +69,9 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return autoRoutines.getCommand().finallyDo((interrupted) -> CommandScheduler.getInstance().schedule(hopper.off().andThen(shooter.off())));
+    return autoRoutines.getCommand().finallyDo((interrupted) -> {
+      if (interrupted)
+        CommandScheduler.getInstance().schedule(hopper.off().andThen(shooter.off()));
+    });
   }
 }

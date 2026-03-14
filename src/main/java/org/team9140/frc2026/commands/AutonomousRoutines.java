@@ -50,6 +50,7 @@ public class AutonomousRoutines {
         autoChooser.addOption("Climb Right", "climb_right");
         autoChooser.addOption("Sweep Middle From Depot", "sweep_middle_left");
         autoChooser.addOption("Sweep Middle From Outpost", "sweep_middle_right");
+        autoChooser.addOption("Score from Depot starting Middle", "score_from_depot");
         SmartDashboard.putData(autoChooser);
         namedCommands.put("shoot", getShootCommand());
         namedCommands.put("intakeOn", intake.intake());
@@ -73,6 +74,8 @@ public class AutonomousRoutines {
                 return sweepMiddleFromLeft();
             case "sweep_middle_right":
                 return sweepMiddleFromRight();
+            case "score_from_depot":
+                return depotShot();
             default:
                 return doNothing();
         }
@@ -135,6 +138,14 @@ public class AutonomousRoutines {
 
     public Command sweepMiddleFromLeft() {
         FollowPath path = new FollowPath("crossandsweep_Blue_Left", () -> this.drivetrain.getState().Pose,
+                this.drivetrain::followSample, Util.getAlliance().get(), drivetrain);
+        if (Robot.isSimulation()) drivetrain.resetPose(path.getInitialPose());
+        bindEventCommands(path);
+        return path.gimmeCommand();
+    }
+
+    public Command depotShot() {
+        FollowPath path = new FollowPath("depotShoot_Blue", () -> this.drivetrain.getState().Pose,
                 this.drivetrain::followSample, Util.getAlliance().get(), drivetrain);
         if (Robot.isSimulation()) drivetrain.resetPose(path.getInitialPose());
         bindEventCommands(path);

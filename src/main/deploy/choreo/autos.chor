@@ -4,7 +4,36 @@
  "type":"Swerve",
  "variables":{
   "expressions":{},
-  "poses":{}
+  "poses":{
+   "Blue_Depot":{
+    "x":{
+     "exp":"3.5149402618408203 m",
+     "val":3.5149402618408203
+    },
+    "y":{
+     "exp":"5.54520090082 m",
+     "val":5.54520090082
+    },
+    "heading":{
+     "exp":"0 rad",
+     "val":0.0
+    }
+   },
+   "Blue_Outpost":{
+    "x":{
+     "exp":"3.5149402618408203 m",
+     "val":3.5149402618408203
+    },
+    "y":{
+     "exp":"2.524125099182129 m",
+     "val":2.524125099182129
+    },
+    "heading":{
+     "exp":"0 rad",
+     "val":0.0
+    }
+   }
+  }
  },
  "config":{
   "frontLeft":{

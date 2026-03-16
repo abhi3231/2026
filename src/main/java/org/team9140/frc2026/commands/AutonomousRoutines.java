@@ -77,11 +77,11 @@ public class AutonomousRoutines {
                 case "climb_right":
                     return climb(false);
                 case "sweep_middle_left":
-                    return sweepMiddleFromLeft();
+                    return runChoreoAuto("crossandsweep_Blue_Left");
                 case "sweep_middle_right":
-                    return sweepMiddleFromRight();
+                    return runChoreoAuto("crossandsweep_Blue_Right");
                 case "score_from_depot":
-                    return depotShot();
+                    return runChoreoAuto("depotShot_Blue");
                 default:
                     return doNothing();
             }
@@ -127,28 +127,12 @@ public class AutonomousRoutines {
         }
     }
 
-    // this one is good
-    public Command sweepMiddleFromRight() {
-        FollowPath path = new FollowPath("crossandsweep_Blue_Right", () -> this.drivetrain.getState().Pose,
+    public Command runChoreoAuto(String pathame) {
+        FollowPath path = new FollowPath(pathame, () -> this.drivetrain.getState().Pose,
                 this.drivetrain::followSample, Util.getAlliance().get(), drivetrain);
         if (Robot.isSimulation()) drivetrain.resetPose(path.getInitialPose());
         bindEventCommands(path);
         return path.gimmeCommand();
     }
 
-    public Command sweepMiddleFromLeft() {
-        FollowPath path = new FollowPath("crossandsweep_Blue_Left", () -> this.drivetrain.getState().Pose,
-                this.drivetrain::followSample, Util.getAlliance().get(), drivetrain);
-        if (Robot.isSimulation()) drivetrain.resetPose(path.getInitialPose());
-        bindEventCommands(path);
-        return path.gimmeCommand();
-    }
-
-    public Command depotShot() {
-        FollowPath path = new FollowPath("depotShoot_Blue", () -> this.drivetrain.getState().Pose,
-                this.drivetrain::followSample, Util.getAlliance().get(), drivetrain);
-        if (Robot.isSimulation()) drivetrain.resetPose(path.getInitialPose());
-        bindEventCommands(path);
-        return path.gimmeCommand();
-    }
 }

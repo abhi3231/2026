@@ -27,7 +27,7 @@ public class AimAlign {
         lookupMotorSpeedFromDistance.put(Double.valueOf(Units.feetToMeters(13)), 2825.0 / 60);
 
         lookupAirtimeFromDistance.put(Double.valueOf(14.85), Double.valueOf(0.2));
-        lookupMotorSpeedFromDistance.put(Double.valueOf(9.74), Double.valueOf(-0.119));
+        lookupAirtimeFromDistance.put(Double.valueOf(9.74), Double.valueOf(-0.119));
     }
 
     public static Translation2d getEffectivePose(Pose2d turretPose, Translation2d goalPose, ChassisSpeeds robotSpeed) {

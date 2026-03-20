@@ -51,6 +51,8 @@ public class AutonomousRoutines {
         autoChooser.addOption("Sweep Middle From Depot", "sweep_middle_left");
         autoChooser.addOption("Sweep Middle From Outpost", "sweep_middle_right");
         autoChooser.addOption("Score from Depot starting Middle", "score_from_depot");
+        autoChooser.addOption("Sweep Middle and Reverse From Depot", "sweep_reverse_left");
+        autoChooser.addOption("Sweep Middle and Reverse From Outpost", "sweep_reverse_right");
         SmartDashboard.putData(autoChooser);
         namedCommands.put("shoot", this::getShootCommand);
         namedCommands.put("intakeOn", intake::intake);
@@ -83,6 +85,10 @@ public class AutonomousRoutines {
                     return runChoreoAuto("crossandsweep_Blue_Right");
                 case "score_from_depot":
                     return runChoreoAuto("depotShoot_Blue");
+                case "sweep_reverse_left":
+                    return runChoreoAuto("crossandreverse_Blue_Left");
+                case "sweep_reverse_right":
+                    return runChoreoAuto("crossandreverse_Blue_Right");
                 default:
                     return doNothing();
             }

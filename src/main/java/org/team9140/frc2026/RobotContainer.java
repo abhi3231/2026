@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 public class RobotContainer {
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
@@ -66,6 +67,10 @@ public class RobotContainer {
         .onFalse(this.hopper.off());
     this.controller.back().whileTrue(this.shooter.manualLeft());
     this.controller.start().whileTrue(this.shooter.manualRight());
+    // this.controller.y().whileTrue(this.drivetrain.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    // this.controller.a().whileTrue(this.drivetrain.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    // this.controller.b().whileTrue(this.drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    // this.controller.x().whileTrue(this.drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
     drivetrain.setDefaultCommand(driveCommand);
 
     this.drivetrain.registerTelemetry(logger::telemeterize);

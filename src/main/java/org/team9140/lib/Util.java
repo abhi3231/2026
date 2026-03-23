@@ -13,6 +13,8 @@ public class Util {
 
     private static DriverStation.Alliance alliance = null;
 
+    public static final Rotation2d NOROTATION = new Rotation2d();
+
     public static void updateAlliance() {
         alliance = DriverStation.getAlliance().orElse(null);
     }

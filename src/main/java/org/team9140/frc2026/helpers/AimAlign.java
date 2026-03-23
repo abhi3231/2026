@@ -8,7 +8,6 @@ import org.team9140.lib.Util;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -53,10 +52,11 @@ public class AimAlign {
     }
 
     public static double yawAngleToPos(Pose2d robotPose, Translation2d endPose) {
-        endPose = (new Pose2d(endPose, new Rotation2d()).relativeTo(robotPose)).getTranslation();
+        endPose = (new Pose2d(endPose, Util.NOROTATION).relativeTo(robotPose)).getTranslation();
         return MathUtil.angleModulus(Math.atan2(
                 (endPose.getY() - Turret.POSITION_TO_ROBOT.getY()),
-                (endPose.getX() - Turret.POSITION_TO_ROBOT.getX())));
+                (endPose.getX() - Turret.POSITION_TO_ROBOT.getX()))
+                - Turret.POSITION_TO_ROBOT.getRotation().getRadians());
     }
 
     public static Pose2d getZone(Pose2d robotPose) {

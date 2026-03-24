@@ -55,16 +55,22 @@ public class AutonomousRoutines {
         autoChooser.addOption("Score from Depot starting Middle", "score_from_depot");
         autoChooser.addOption("Sweep Middle and Reverse From Depot", "sweep_reverse_left");
         autoChooser.addOption("Sweep Middle and Reverse From Outpost", "sweep_reverse_right");
+        autoChooser.addOption("Repeat Reverse from Outpost", "repeat_reverse_outpost");
         SmartDashboard.putData(autoChooser);
         namedCommands.put("shoot", this::getShootCommand);
         namedCommands.put("intakeOn", intake::intake);
         namedCommands.put("intakeOff", intake::off);
+        namedCommands.put("shootOff", this::getShootOffCommand);
     }
 
     private Command getShootCommand() {
-        return shooter.aim(this.drivetrain::getState)
+        return shooter.aim(this.drivetrain::getCachedState)
                 .alongWith(new WaitUntilCommand(shooter.yawIsAtPosition.and(shooter.shooterIsAtVelocity))
                         .andThen(hopper.feed()));
+    }
+
+    private Command getShootOffCommand() {
+        return shooter.off().andThen(hopper.off());
     }
 
     private DriverStation.Alliance lastAlliance = Alliance.Red;
@@ -91,6 +97,8 @@ public class AutonomousRoutines {
                     return runChoreoAuto("crossandreverse_Blue_Left");
                 case "sweep_reverse_right":
                     return runChoreoAuto("crossandreverse_Blue_Right");
+                case "repeat_reverse_outpost":
+                    return runRepeatReverse("outpost");
                 default:
                     return doNothing();
             }
@@ -130,16 +138,28 @@ public class AutonomousRoutines {
     }
 
     private final StructPublisher<Pose2d> initialPosePublisher = NetworkTableInstance.getDefault()
-        .getStructTopic("Auto Path Initial Pose", Pose2d.struct).publish();
+            .getStructTopic("Auto Path Initial Pose", Pose2d.struct).publish();
 
     public Command runChoreoAuto(String pathame) {
         FollowPath path = new FollowPath(pathame, () -> this.drivetrain.getState().Pose,
                 this.drivetrain::followSample, Util.getAlliance().get(), drivetrain);
         if (Robot.isSimulation())
             drivetrain.resetPose(path.getInitialPose());
-        bindEventCommands(path);
+        this.bindEventCommands(path);
         initialPosePublisher.set(path.getInitialPose());
         return path.gimmeCommand();
+    }
+
+    public Command runRepeatReverse(String side) {
+        if (side.equals("outpost")) {
+            return runChoreoAuto("repeatReverse_Blue_Outpost_Shallow")
+                    .andThen(runChoreoAuto("repeatReverse_Blue_Outpost_Reset"))
+                    .andThen(runChoreoAuto("repeatReverse_Blue_Outpost_Deep"))
+                    .andThen(runChoreoAuto("repeatReverse_Blue_Outpost_Reset"));
+        }
+        else {
+            return null;
+        }
     }
 
 }

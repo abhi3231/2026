@@ -141,7 +141,7 @@ public class Shooter extends SubsystemBase {
                 .withPeakReverseTorqueCurrent(0.0);
 
         CurrentLimitsConfigs shooterCurrentLimits = new CurrentLimitsConfigs()
-                .withStatorCurrentLimit(80)
+                .withStatorCurrentLimit(60)
                 .withStatorCurrentLimitEnable(true)
                 .withSupplyCurrentLimit(40)
                 .withSupplyCurrentLimitEnable(true);
@@ -215,9 +215,10 @@ public class Shooter extends SubsystemBase {
         return this.run(() -> {
             if (this.isManual)
                 return;
-            Pose2d turretPose = chassisStateSupplier.get().Pose;
-            
-            Translation2d targetPose = AimAlign.getZone(turretPose).getTranslation();
+            SwerveDriveState robotState = chassisStateSupplier.get();
+            Pose2d turretPose = robotState.Pose;
+
+            Translation2d targetPose = AimAlign.getEffectivePose(turretPose, AimAlign.getZone(turretPose).getTranslation(), robotState.Speeds);
             this.shooterMotor.setControl(shooterSpeedControl.withVelocity(
                     AimAlign.getRequiredSpeed(turretPose, targetPose)));
             this.yawMotor.setControl(yawMotorControl.withPosition(

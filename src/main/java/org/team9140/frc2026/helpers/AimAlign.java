@@ -8,10 +8,14 @@ import org.team9140.lib.Util;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AimAlign {
     private static InterpolatingDoubleTreeMap lookupMotorSpeedFromDistance = new InterpolatingDoubleTreeMap();
@@ -27,22 +31,34 @@ public class AimAlign {
         lookupMotorSpeedFromDistance.put(5.449, 3150 / 60.0);
 
 
-        lookupAirtimeFromDistance.put(Double.valueOf(14.85), Double.valueOf(0.2));
-        lookupAirtimeFromDistance.put(Double.valueOf(9.74), Double.valueOf(-0.119));
+        lookupAirtimeFromDistance.put(2.304, 0.95);
+        lookupAirtimeFromDistance.put(2.880, 1.04);
+        lookupAirtimeFromDistance.put(3.050, 1.15);
+        lookupAirtimeFromDistance.put(3.380, 1.20);
+        lookupAirtimeFromDistance.put(4.045, 1.27);
+        lookupAirtimeFromDistance.put(5.359, 1.35);
     }
+
+    static StructPublisher<Pose2d> effectivePosePublisher = NetworkTableInstance.getDefault().getStructTopic("Effective Pose", Pose2d.struct).publish();
 
     public static Translation2d getEffectivePose(Pose2d robotPose, Translation2d goalPose, ChassisSpeeds robotSpeed) {
         Translation2d robotVelocity = new Translation2d(
                 robotSpeed.vxMetersPerSecond,
                 robotSpeed.vyMetersPerSecond);
-        Translation2d oldPose = goalPose.minus(robotPose.plus(Turret.POSITION_TO_ROBOT).getTranslation());
-        double airtime = lookupAirtimeFromDistance.get(oldPose.getNorm());
-        Translation2d newPose = goalPose.minus(robotVelocity.times(airtime));
-        while (oldPose.minus(newPose).getNorm() > 0.1) {
-            oldPose = newPose;
-            airtime = lookupAirtimeFromDistance.get(oldPose.getNorm());
-            newPose = goalPose.minus(robotVelocity.times(airtime));
-        }
+        double distance, airtime;
+        Translation2d newPose = goalPose.plus(robotVelocity.times(lookupAirtimeFromDistance.get(robotPose.plus(Turret.POSITION_TO_ROBOT).getTranslation().minus(goalPose).getNorm())));
+
+        int iterations = 0;
+        do {
+            iterations++;
+            distance = robotPose.plus(Turret.POSITION_TO_ROBOT).getTranslation().minus(newPose).getNorm();
+            airtime = lookupAirtimeFromDistance.get(distance);
+            SmartDashboard.putNumber("Estimated Airtime", airtime);
+            effectivePosePublisher.set(new Pose2d(newPose, new Rotation2d()));
+        } while (newPose.minus(newPose = goalPose.plus(robotVelocity.times(airtime))).getNorm() > 0.05 && iterations < 5);
+
+        SmartDashboard.putNumber("NumIterations", iterations);
+
         return newPose;
     }
 

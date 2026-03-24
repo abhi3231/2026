@@ -56,6 +56,7 @@ public class AutonomousRoutines {
         autoChooser.addOption("Sweep Middle and Reverse From Depot", "sweep_reverse_left");
         autoChooser.addOption("Sweep Middle and Reverse From Outpost", "sweep_reverse_right");
         autoChooser.addOption("Repeat Reverse from Outpost", "repeat_reverse_outpost");
+        autoChooser.addOption("Repeat Reverse from Depot", "repeat_reverse_depot");
         SmartDashboard.putData(autoChooser);
         namedCommands.put("shoot", this::getShootCommand);
         namedCommands.put("intakeOn", intake::intake);
@@ -99,6 +100,8 @@ public class AutonomousRoutines {
                     return runChoreoAuto("crossandreverse_Blue_Right");
                 case "repeat_reverse_outpost":
                     return runRepeatReverse("outpost");
+                case "repeat_reverse_depot":
+                    return runRepeatReverse("depot");
                 default:
                     return doNothing();
             }
@@ -160,9 +163,13 @@ public class AutonomousRoutines {
                     .andThen(runChoreoAuto("repeatReverse_Blue_Outpost_Reset", false))
                     .andThen(runChoreoAuto("repeatReverse_Blue_Outpost_Deep", false))
                     .andThen(runChoreoAuto("repeatReverse_Blue_Outpost_Reset", false));
-        } else {
-            return null;
+        } else if (side.equals("depot")){
+            return runChoreoAuto("repeatReverse_Blue_Depot_Shallow")
+                    .andThen(runChoreoAuto("repeatReverse_Blue_Depot_Reset", false))
+                    .andThen(runChoreoAuto("repeatReverse_Blue_Depot_Deep", false))
+                    .andThen(runChoreoAuto("repeatReverse_Blue_Depot_Reset", false));
         }
+        else return null;
     }
 
 }

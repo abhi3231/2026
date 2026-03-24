@@ -19,6 +19,34 @@
      "val":0.0
     }
    },
+   "Blue_Depot_Trench":{
+    "x":{
+     "exp":"3.48 m",
+     "val":3.48
+    },
+    "y":{
+     "exp":"7.44 m",
+     "val":7.44
+    },
+    "heading":{
+     "exp":"3.14 rad",
+     "val":3.14
+    }
+   },
+   "Blue_Depot_Trench_End":{
+    "x":{
+     "exp":"3.4 m",
+     "val":3.4
+    },
+    "y":{
+     "exp":"5.62 m",
+     "val":5.62
+    },
+    "heading":{
+     "exp":"3.14 rad",
+     "val":3.14
+    }
+   },
    "Blue_Middle":{
     "x":{
      "exp":"3.4551591873168945 m",

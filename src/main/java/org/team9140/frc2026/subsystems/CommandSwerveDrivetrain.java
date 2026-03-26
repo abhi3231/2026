@@ -45,6 +45,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -411,13 +412,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     SwerveDriveBrake brake = new SwerveDriveBrake();
     double startTime = 0.0;
+    double teleop_velocity_multiplier = 1.0;
 
     public Command teleopDrive(DoubleSupplier leftStickX, DoubleSupplier leftStickY, DoubleSupplier rightStickX) {
         return this.runOnce(() -> {
             startTime = Utils.getSystemTimeSeconds();
         }).andThen(this.run(() -> {
-            double vX = Constants.Drive.MAX_TELEOP_VELOCITY * Util.applyDeadband(-leftStickY.getAsDouble());
-            double vY = Constants.Drive.MAX_TELEOP_VELOCITY * Util.applyDeadband(-leftStickX.getAsDouble());
+            double vX = teleop_velocity_multiplier * Constants.Drive.MAX_TELEOP_VELOCITY * Util.applyDeadband(-leftStickY.getAsDouble());
+            double vY = teleop_velocity_multiplier * Constants.Drive.MAX_TELEOP_VELOCITY * Util.applyDeadband(-leftStickX.getAsDouble());
             double omega = Constants.Drive.MAX_TELEOP_ROTATION * Util.applyDeadband(-rightStickX.getAsDouble());
 
             if (vX == 0.0 && vY == 0.0 && omega == 0) {
@@ -438,6 +440,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                     .withVelocityY(vY)
                     .withRotationalRate(omega));
         })).withName("regular drive");
+    }
+
+    public Command slowTeleop() {
+        return Commands.runOnce(() -> this.teleop_velocity_multiplier = Constants.Drive.TELEOP_SHOOTING_VELOCITY_MULTIPLIER).andThen(Commands.idle()).finallyDo(() -> this.teleop_velocity_multiplier = 1.0);
     }
 
     private final SwerveRequest.FieldCentric auton = new SwerveRequest.FieldCentric()

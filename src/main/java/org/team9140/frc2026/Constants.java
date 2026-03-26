@@ -39,8 +39,10 @@ public class Constants {
     }
 
     public static class Drive {
-        public static double MAX_TELEOP_VELOCITY = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+        public static double MAX_TELEOP_VELOCITY = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) * 0.8;
         public static double MAX_TELEOP_ROTATION = Math.toRadians(360);
+
+        public static double MAX_VELOCITY = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
 
         public static double MIN_TELEOP_VELOCITY = 0.05;
         public static double MIN_TELEOP_ROTATION = Math.toRadians(2);
@@ -59,6 +61,7 @@ public class Constants {
 
         public static final double REACHEDPOSE_DEBOUNCE = 0.5;
         public static final double BRAKE_IDLE_TIME = 6.0;
+        public static final double TELEOP_SHOOTING_VELOCITY_MULTIPLIER = 0.67;
 
     }
 

@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 public class RobotContainer {
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
@@ -25,7 +24,7 @@ public class RobotContainer {
   private final Shooter shooter = Shooter.getInstance();
 
   private final CommandXboxController controller = new CommandXboxController(0);
-  private final SwerveTelemetry logger = new SwerveTelemetry(drivetrain, Constants.Drive.MAX_TELEOP_VELOCITY);
+  private final SwerveTelemetry logger = new SwerveTelemetry(drivetrain, Constants.Drive.MAX_VELOCITY);
   private final AutonomousRoutines autoRoutines;
   private final Command driveCommand;
 
@@ -52,7 +51,7 @@ public class RobotContainer {
     this.shooter.setPoseSupplier(() -> this.drivetrain.getCachedState().Pose);
     SmartDashboard.putNumber("tuning RPM", 2500);
     this.controller.rightBumper()
-        .onTrue(this.intake.intake())
+        .onTrue(this.intake.intake().alongWith(this.drivetrain.slowTeleop()))
         .onFalse(this.intake.off());
     this.controller.leftBumper()
         .onTrue(this.intake.reverse().alongWith(this.hopper.unjam()))
@@ -61,7 +60,7 @@ public class RobotContainer {
     this.controller.a().onTrue(this.shooter.aim(this.drivetrain::getCachedState));
     this.controller.x().onTrue(this.shooter.off());
     this.controller.rightTrigger()
-        .onTrue(this.hopper.feed())
+        .onTrue(this.hopper.feed().alongWith(this.drivetrain.slowTeleop()))
         .onFalse(this.hopper.off());
     this.controller.leftTrigger()
         .onTrue(this.hopper.unjam())

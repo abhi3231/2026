@@ -302,10 +302,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
         SmartDashboard.putBoolean("vision high ambiguity", false);
 
-        double kArea = 0.6;
+        double kArea = 3.0;
         double kLinearVel = 2.5;
         double kAngularVel = 3.0;
-        double kAmb = 1.0;
+        double kAmb = 3.0;
 
         if (measurement.tagCount == 1) {
             kArea *= 0.5;
@@ -314,7 +314,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             kAmb *= 1;
         }
 
-        double sigmaArea = kArea / Math.sqrt(measurement.avgTagArea);
+        double sigmaArea = kArea * Math.exp(5 - 10 * Math.sqrt(measurement.avgTagArea));
 
         double linearVel = Math.hypot(
                 speeds.vxMetersPerSecond,
@@ -339,8 +339,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             thetaStdDev *= 0.7;
         }
 
-        xyStdDev = MathUtil.clamp(xyStdDev, 0.05, 5.0);
-        thetaStdDev = MathUtil.clamp(thetaStdDev, 1.0, 100.0);
+        // xyStdDev = MathUtil.clamp(xyStdDev, 0.05, 5.0);
+        // thetaStdDev = MathUtil.clamp(thetaStdDev, 1.0, 100.0);
 
         if (DriverStation.isEnabled()) {
             thetaStdDev = 9999;

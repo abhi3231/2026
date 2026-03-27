@@ -48,15 +48,15 @@ public class AutonomousRoutines {
         this.drivetrain = drivetrain;
         autoChooser.setDefaultOption("Do Nothing", "nothing");
         autoChooser.addOption("Shoot Preload", "preload");
-        autoChooser.addOption("Climb Left", "climb_left");
-        autoChooser.addOption("Climb Right", "climb_right");
-        autoChooser.addOption("Sweep Middle From Depot", "sweep_middle_left");
-        autoChooser.addOption("Sweep Middle From Outpost", "sweep_middle_right");
+        autoChooser.addOption("Sweep Middle From Depot", "sweep_middle_depot");
+        autoChooser.addOption("Sweep Middle From Outpost", "sweep_middle_outpost");
         autoChooser.addOption("Score from Depot starting Middle", "score_from_depot");
-        autoChooser.addOption("Sweep Middle and Reverse From Depot", "sweep_reverse_left");
-        autoChooser.addOption("Sweep Middle and Reverse From Outpost", "sweep_reverse_right");
-        autoChooser.addOption("Repeat Reverse from Outpost", "repeat_reverse_outpost");
-        autoChooser.addOption("Repeat Reverse from Depot", "repeat_reverse_depot");
+        autoChooser.addOption("1 Pass From Depot", "one_pass_depot");
+        autoChooser.addOption("1 Pass From Outpost", "one_pass_outpost");
+        autoChooser.addOption("2 Passes from Outpost", "two_pass_outpost");
+        autoChooser.addOption("2 Passes from Depot", "two_pass_depot");
+        autoChooser.addOption("2 Safe Passes from Outpost", "two_pass_outpost_safe");
+        autoChooser.addOption("2 Safe Passes from Depot", "two_pass_depot_safe");
         SmartDashboard.putData(autoChooser);
         namedCommands.put("shoot", this::getShootCommand);
         namedCommands.put("intakeOn", intake::intake);
@@ -84,24 +84,28 @@ public class AutonomousRoutines {
             switch (lastFetchedAuto) {
                 case "preload":
                     return this.intake.armOut().andThen(new WaitCommand(2.0)).andThen(this.getShootCommand());
-                case "climb_left":
-                    return climb(true);
-                case "climb_right":
-                    return climb(false);
-                case "sweep_middle_left":
-                    return runChoreoAuto("crossandsweep_Blue_Left");
-                case "sweep_middle_right":
-                    return runChoreoAuto("crossandsweep_Blue_Right");
+                case "sweep_middle_depot":
+                    return runChoreoAuto("crossandsweep_Depot");
+                case "sweep_middle_outpost":
+                    return runChoreoAuto("crossandsweep_Outpost");
                 case "score_from_depot":
-                    return runChoreoAuto("depotShoot_Blue");
-                case "sweep_reverse_left":
-                    return runChoreoAuto("crossandreverse_Blue_Left");
-                case "sweep_reverse_right":
-                    return runChoreoAuto("crossandreverse_Blue_Right");
-                case "repeat_reverse_outpost":
-                    return runRepeatReverse("outpost");
-                case "repeat_reverse_depot":
-                    return runRepeatReverse("depot");
+                    return runChoreoAuto("depotShoot");
+                case "one_pass_outpost":
+                    return runChoreoAuto("onceReverse_Outpost");
+                case "one_pass_depot":
+                    return runChoreoAuto("onceReverse_Depot");
+                case "two_pass_outpost":
+                    return runChoreoAuto("repeatReverse_Outpost_Deep", false)
+                    .andThen(runChoreoAuto("repeatReverse_Outpost_Shallow"));
+                case "two_pass_depot":
+                    return runChoreoAuto("repeatReverse_Depot_Deep", false)
+                    .andThen(runChoreoAuto("repeatReverse_Depot_Shallow"));
+                case "two_pass_outpost_safe":
+                    return runChoreoAuto("repeatReverse_Outpost_Deep_SAFE", false)
+                    .andThen(runChoreoAuto("repeatReverse_Outpost_Shallow"));
+                case "two_pass_depot_safe":
+                    return runChoreoAuto("repeatReverse_Depot_Deep_SAFE", false)
+                    .andThen(runChoreoAuto("repeatReverse_Depot_Shallow"));
                 default:
                     return doNothing();
             }
@@ -155,18 +159,6 @@ public class AutonomousRoutines {
 
     public Command runChoreoAuto(String pathame) {
         return this.runChoreoAuto(pathame, true);
-    }
-
-    public Command runRepeatReverse(String side) {
-        if (side.equals("outpost")) {
-            return runChoreoAuto("repeatReverse_Blue_Outpost_Deep", false)
-                    .andThen(runChoreoAuto("repeatReverse_Blue_Outpost_Shallow"));
-        } else if (side.equals("depot")) {
-            return runChoreoAuto("repeatReverse_Blue_Depot_Deep", false)
-                    .andThen(runChoreoAuto("repeatReverse_Blue_Depot_Shallow"));
-        } else {
-            return null;
-        }
     }
 
 }

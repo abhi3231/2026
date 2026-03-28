@@ -146,6 +146,9 @@ public class Shooter extends SubsystemBase {
                 .withSupplyCurrentLimit(40)
                 .withSupplyCurrentLimitEnable(true);
 
+        FeedbackConfigs shooterFeedbackConfigs = new FeedbackConfigs()
+                .withSensorToMechanismRatio(Constants.Shooter.FLYWHEEL_GEAR_RATIO);
+
         TalonFXConfiguration shooterConfig = new TalonFXConfiguration()
                 .withSlot0(shooterSlot0Configs)
                 .withMotorOutput(shooterMotorOutputConfigs)
@@ -154,7 +157,7 @@ public class Shooter extends SubsystemBase {
 
         yawMotor.getConfigurator().apply(yawConfig);
         shooterMotor.getConfigurator().apply(shooterConfig);
-        shooterFollower.setControl(new Follower(Constants.Ports.SHOOTER_MOTOR, MotorAlignmentValue.Aligned));
+        shooterFollower.setControl(new Follower(Constants.Ports.SHOOTER_MOTOR, MotorAlignmentValue.Opposed));
         this.yawMotor.setControl(yawMotorControl.withPosition(0));
 
         Mechanism2d yawMech = new Mechanism2d(1, 1);
@@ -368,10 +371,10 @@ public class Shooter extends SubsystemBase {
 
         shooterMotorSim.update(deltatime);
 
-        shooterMotorSimState.setRawRotorPosition(shooterMotorSim.getAngularPositionRotations());
-        shooterMotorSimState.setRotorVelocity(shooterMotorSim.getAngularVelocityRPM() / 60.0);
+        shooterMotorSimState.setRawRotorPosition(shooterMotorSim.getAngularPositionRotations() * Constants.Shooter.FLYWHEEL_GEAR_RATIO);
+        shooterMotorSimState.setRotorVelocity(shooterMotorSim.getAngularVelocityRPM() / 60.0 * Constants.Shooter.FLYWHEEL_GEAR_RATIO);
         shooterMotorSimState.setRotorAcceleration(
-                shooterMotorSim.getAngularAccelerationRadPerSecSq() / 2.0 / Math.PI);
+                shooterMotorSim.getAngularAccelerationRadPerSecSq() * Constants.Shooter.FLYWHEEL_GEAR_RATIO / 2.0 / Math.PI);
     }
 
     public final Trigger yawIsAtPosition = new Trigger(

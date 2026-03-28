@@ -33,10 +33,10 @@ public class Hopper extends SubsystemBase{
                 .withSupplyCurrentLimitEnable(true);
         
         MotorOutputConfigs spinnerMotorOutputConfig = new MotorOutputConfigs()
-                .withInverted(InvertedValue.Clockwise_Positive);
+                .withInverted(InvertedValue.CounterClockwise_Positive);
 
         MotorOutputConfigs feederMotorOutputConfig = new MotorOutputConfigs()
-                .withInverted(InvertedValue.CounterClockwise_Positive);
+                .withInverted(InvertedValue.Clockwise_Positive);
 
         TalonFXConfiguration spinnerMotorConfigs = new TalonFXConfiguration()
                 .withCurrentLimits(spinnerCurrentLimits)

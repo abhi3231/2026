@@ -60,7 +60,7 @@ public class Intake extends SubsystemBase {
                 .withSupplyCurrentLimitEnable(true);
 
         MotorOutputConfigs spinMotorOutputConfigs = new MotorOutputConfigs()
-                .withInverted(InvertedValue.Clockwise_Positive);
+                .withInverted(InvertedValue.CounterClockwise_Positive);
 
         MotorOutputConfigs extendMotorOutputConfigs = new MotorOutputConfigs()
                 .withInverted(InvertedValue.Clockwise_Positive);

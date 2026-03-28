@@ -76,6 +76,8 @@ public class Constants {
         public static final double SHOOTER_KP = 100;
         public static final double SHOOTER_KI = 0;
         public static final double SHOOTER_KD = 0;
+
+        public static final double FLYWHEEL_GEAR_RATIO = 26.0 / 24.0;
     }
 
     public static class Climber {
@@ -102,7 +104,7 @@ public class Constants {
     }
 
     public static class Intake {
-        public static final double EXTENSION_GEAR_RATIO = 50.0 / 11.0;
+        public static final double EXTENSION_GEAR_RATIO = 30.0 / 15.0 * 50.0 / 11.0;
         public static final double TOLERANCE = Units.inchesToMeters(0.5);
 
         public static final int PINION_TEETH = 10;
@@ -165,7 +167,7 @@ public class Constants {
         public static final double ADJUST_VOLTAGE = 2.0;
         public static final double FORWARD_SOFT_LIMIT_THRESHOLD = 0.25; // rot
         public static final double REVERSE_SOFT_LIMIT_THRESHOLD = -0.25; // rot
-        public static final double GEAR_RATIO = 98.0 / 10.0 * 50.0 / 11.0;
+        public static final double GEAR_RATIO = 90.0 / 10.0 * 50.0 / 11.0;
 
         public static final double OVERTURN_LOOKAHEAD_TIME = 1.5;
         public static final Transform2d POSITION_TO_ROBOT = new Transform2d(-0.15, 0.2, new Rotation2d(-Math.PI));

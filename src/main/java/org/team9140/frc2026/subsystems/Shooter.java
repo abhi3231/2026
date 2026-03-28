@@ -153,7 +153,8 @@ public class Shooter extends SubsystemBase {
                 .withSlot0(shooterSlot0Configs)
                 .withMotorOutput(shooterMotorOutputConfigs)
                 .withTorqueCurrent(shooterTorqueCurrentConfigs)
-                .withCurrentLimits(shooterCurrentLimits);
+                .withCurrentLimits(shooterCurrentLimits)
+                .withFeedback(shooterFeedbackConfigs);
 
         yawMotor.getConfigurator().apply(yawConfig);
         shooterMotor.getConfigurator().apply(shooterConfig);

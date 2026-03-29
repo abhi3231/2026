@@ -52,6 +52,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -216,19 +217,24 @@ public class Shooter extends SubsystemBase {
      * 3. calculate turret angle to make it to spot
      * 4. set yaw and flywheel motors
      */
-    public Command aim(Supplier<SwerveDriveState> chassisStateSupplier) {
+    public Command aim(Supplier<SwerveDriveState> chassisStateSupplier, Supplier<Translation2d> targetTranslationSupplier) {
         return this.run(() -> {
             if (this.isManual)
                 return;
             SwerveDriveState robotState = chassisStateSupplier.get();
             Pose2d turretPose = robotState.Pose;
 
-            Translation2d targetPose = AimAlign.getEffectivePose(turretPose, AimAlign.getZone(turretPose).getTranslation(), robotState.Speeds);
+            Translation2d targetPose = AimAlign.getEffectivePose(turretPose,
+                    targetTranslationSupplier.get(), robotState.Speeds);
             this.shooterMotor.setControl(shooterSpeedControl.withVelocity(
                     AimAlign.getRequiredSpeed(turretPose, targetPose)));
             this.yawMotor.setControl(yawMotorControl.withPosition(
                     AimAlign.yawAngleToPos(turretPose, targetPose) / (2.0 * Math.PI)));
         }).withName("Continuously Aim Automatically");
+    }
+
+    public Command aim(Supplier<SwerveDriveState> chassisStateSupplier) {
+        return this.aim(chassisStateSupplier, () -> AimAlign.getZone(turretPose).getTranslation());
     }
 
     public Command shoot(Supplier<SwerveDriveState> chassisStateSupplier) {
@@ -247,8 +253,7 @@ public class Shooter extends SubsystemBase {
             // point turret forward / starting orientation / whatever
             this.yawMotor.setControl(yawMotorControl.withPosition(0));
             this.shooterMotor.setControl(new VoltageOut(Constants.Shooter.IDLE_VOLTAGE));
-        }).andThen(this.run(() -> {
-        })).withName("Idle");
+        }).andThen(Commands.idle(this)).withName("Idle");
     }
 
     // make this default command
@@ -265,8 +270,7 @@ public class Shooter extends SubsystemBase {
         return this.runOnce(() -> {
             this.yawMotor.setControl(yawMotorControl.withPosition(0));
             this.shooterMotor.setControl(shooterSpeedControl.withVelocity(RPM.getAsDouble() / 60.0));
-        }).andThen(this.run(() -> {
-        }));
+        }).andThen(Commands.idle(this));
     }
 
     private double targetYawRateOfChange = 0;
@@ -281,13 +285,20 @@ public class Shooter extends SubsystemBase {
         if (posSupplier != null) {
             turretPose = posSupplier.get().plus(Constants.Turret.POSITION_TO_ROBOT);
             turretPose = turretPose
-                    .plus(new Transform2d(new Translation2d(), new Rotation2d(this.yawMotor.getPosition().getValue())));
+                    .plus(new Transform2d(new Translation2d(),
+                            new Rotation2d(this.yawMotor.getPosition().getValue())));
+
             SmartDashboard.putNumber("distance to target shot",
-                    turretPose.getTranslation().minus(AimAlign.getZone(turretPose).getTranslation()).getNorm());
+                    turretPose.getTranslation().minus(AimAlign.getZone(turretPose).getTranslation())
+                            .getNorm());
             SmartDashboard.putNumber("distance to blue hub",
-                    turretPose.getTranslation().minus(FieldConstants.Hub.CENTER_POINT.getTranslation()).getNorm());
+                    turretPose.getTranslation()
+                            .minus(FieldConstants.Hub.CENTER_POINT.getTranslation())
+                            .getNorm());
             SmartDashboard.putNumber("distance to red hub",
-                    turretPose.getTranslation().minus(FieldConstants.Hub.RED_CENTER_POINT.getTranslation()).getNorm());
+                    turretPose.getTranslation()
+                            .minus(FieldConstants.Hub.RED_CENTER_POINT.getTranslation())
+                            .getNorm());
             turretPublisher.set(turretPose);
         }
 
@@ -371,10 +382,13 @@ public class Shooter extends SubsystemBase {
 
         shooterMotorSim.update(deltatime);
 
-        shooterMotorSimState.setRawRotorPosition(shooterMotorSim.getAngularPositionRotations() * Constants.Shooter.FLYWHEEL_GEAR_RATIO);
-        shooterMotorSimState.setRotorVelocity(shooterMotorSim.getAngularVelocityRPM() / 60.0 * Constants.Shooter.FLYWHEEL_GEAR_RATIO);
+        shooterMotorSimState.setRawRotorPosition(
+                shooterMotorSim.getAngularPositionRotations() * Constants.Shooter.FLYWHEEL_GEAR_RATIO);
+        shooterMotorSimState.setRotorVelocity(
+                shooterMotorSim.getAngularVelocityRPM() / 60.0 * Constants.Shooter.FLYWHEEL_GEAR_RATIO);
         shooterMotorSimState.setRotorAcceleration(
-                shooterMotorSim.getAngularAccelerationRadPerSecSq() * Constants.Shooter.FLYWHEEL_GEAR_RATIO / 2.0 / Math.PI);
+                shooterMotorSim.getAngularAccelerationRadPerSecSq()
+                        * Constants.Shooter.FLYWHEEL_GEAR_RATIO / 2.0 / Math.PI);
     }
 
     public final Trigger yawIsAtPosition = new Trigger(

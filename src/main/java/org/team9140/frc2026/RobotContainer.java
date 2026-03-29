@@ -51,20 +51,19 @@ public class RobotContainer {
     this.shooter.setPoseSupplier(() -> this.drivetrain.getCachedState().Pose);
     SmartDashboard.putNumber("tuning RPM", 2500);
     this.controller.rightBumper()
-        .onTrue(this.intake.intake().alongWith(this.drivetrain.slowTeleop()))
+        .whileTrue(this.intake.intake())
         .onFalse(this.intake.off());
     this.controller.leftBumper()
-        .onTrue(this.intake.reverse().alongWith(this.hopper.unjam()))
+        .onTrue(this.intake.armIn().andThen(this.hopper.unjam()))
         .onFalse(this.intake.off().alongWith(this.hopper.off()));
-    this.controller.y().onTrue(this.shooter.tuningSpeed(() -> SmartDashboard.getNumber("tuning RPM", 3500)));
+    this.controller.rightTrigger()
+        .whileTrue(this.hopper.feed())
+        .onFalse(this.hopper.off());
+
+    this.controller.y().onTrue(this.shooter.tuningSpeed(() -> SmartDashboard.getNumber("tuning RPM", 2500)));
     this.controller.a().onTrue(this.shooter.aim(this.drivetrain::getCachedState));
     this.controller.x().onTrue(this.shooter.off());
-    this.controller.rightTrigger()
-        .onTrue(this.hopper.feed().alongWith(this.drivetrain.slowTeleop()))
-        .onFalse(this.hopper.off());
-    this.controller.leftTrigger()
-        .onTrue(this.hopper.unjam())
-        .onFalse(this.hopper.off());
+
     this.controller.back().whileTrue(this.shooter.manualLeft());
     this.controller.start().whileTrue(this.shooter.manualRight());
     // this.controller.y().whileTrue(this.drivetrain.sysIdDynamic(SysIdRoutine.Direction.kForward));
@@ -83,8 +82,8 @@ public class RobotContainer {
 
     if (path != null) {
       this.autonomousRoutine = path.finallyDo((interrupted) -> {
-      if (interrupted)
-        CommandScheduler.getInstance().schedule(hopper.off().andThen(shooter.off()));
+        if (interrupted)
+          CommandScheduler.getInstance().schedule(hopper.off().andThen(shooter.off()));
       });
     }
 

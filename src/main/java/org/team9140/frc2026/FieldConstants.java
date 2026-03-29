@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Filesystem;
 
 public class FieldConstants {
@@ -77,10 +78,10 @@ public class FieldConstants {
     }
 
     public static class FeedingPositions {
-        public static final Pose2d FEEDING_POS_LOWER = new Pose2d(2, 2, new Rotation2d());
-        public static final Pose2d FEEDING_POS_UPPER = new Pose2d(2, 6, new Rotation2d());
-        public static final Pose2d FEEDING_POS_LOWER_RED = new Pose2d(14.540988, 2, new Rotation2d());
-        public static final Pose2d FEEDING_POS_UPPER_RED = new Pose2d(14.540988, 6, new Rotation2d());
+        public static final Pose2d FEEDING_POS_LOWER = new Pose2d(0, 2, new Rotation2d());
+        public static final Pose2d FEEDING_POS_UPPER = new Pose2d(0, 6, new Rotation2d());
+        public static final Pose2d FEEDING_POS_LOWER_RED = new Pose2d(FIELD_LENGTH / 2.0 - (FEEDING_POS_LOWER.getX() - FIELD_LENGTH / 2.0), FIELD_WIDTH / 2.0 + (FEEDING_POS_LOWER.getY() - FIELD_WIDTH / 2.0), Rotation2d.k180deg);
+        public static final Pose2d FEEDING_POS_UPPER_RED = new Pose2d(FIELD_LENGTH / 2.0 - (FEEDING_POS_UPPER.getX() - FIELD_LENGTH / 2.0), FIELD_WIDTH / 2.0 + (FEEDING_POS_UPPER.getY() - FIELD_WIDTH / 2.0), Rotation2d.k180deg);
     }
 
     public enum FieldType {

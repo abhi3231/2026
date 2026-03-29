@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -38,7 +39,8 @@ public class Intake extends SubsystemBase {
     private static Intake instance;
     private final MotionMagicTorqueCurrentFOC motionMagic = new MotionMagicTorqueCurrentFOC(0);
 
-    Mechanism2d intakeMechanism = new Mechanism2d(Constants.Intake.MECHANISM_LENGTH, Constants.Intake.MECHANISM_HEIGHT);
+    Mechanism2d intakeMechanism = new Mechanism2d(Constants.Intake.MECHANISM_LENGTH,
+            Constants.Intake.MECHANISM_HEIGHT);
     MechanismRoot2d root = intakeMechanism.getRoot("root", 1, 1);
     MechanismLigament2d intakeSlide = root
             .append(new MechanismLigament2d("intakeSlide", Constants.Intake.LIGAMENT_LENGTH, 0));
@@ -82,9 +84,9 @@ public class Intake extends SubsystemBase {
                 .withMotorOutput(spinMotorOutputConfigs);
 
         TorqueCurrentConfigs extendTorqueCurrentConfigs = new TorqueCurrentConfigs()
-        .withPeakForwardTorqueCurrent(Constants.Intake.EXTEND_STATOR_CURRENT_LIMIT)
-        .withPeakReverseTorqueCurrent(-Constants.Intake.EXTEND_STATOR_CURRENT_LIMIT)
-        .withTorqueNeutralDeadband(1.0);
+                .withPeakForwardTorqueCurrent(Constants.Intake.EXTEND_STATOR_CURRENT_LIMIT)
+                .withPeakReverseTorqueCurrent(-Constants.Intake.EXTEND_STATOR_CURRENT_LIMIT)
+                .withTorqueNeutralDeadband(1.0);
 
         TalonFXConfiguration extendMotorConfigs = new TalonFXConfiguration()
                 .withCurrentLimits(extendCurrentLimits)
@@ -92,7 +94,8 @@ public class Intake extends SubsystemBase {
                 .withMotionMagic(motionMagicConfigs)
                 .withSoftwareLimitSwitch(softwareLimitSwitchConfigs)
                 .withSlot0(new Slot0Configs().withKP(Constants.Intake.EXTEND_KP))
-                .withFeedback(new FeedbackConfigs().withSensorToMechanismRatio(Constants.Intake.EXTENSION_GEAR_RATIO))
+                .withFeedback(new FeedbackConfigs()
+                        .withSensorToMechanismRatio(Constants.Intake.EXTENSION_GEAR_RATIO))
                 .withTorqueCurrent(extendTorqueCurrentConfigs);
 
         this.rollerMotor.getConfigurator().apply(spinMotorConfigs);
@@ -101,6 +104,8 @@ public class Intake extends SubsystemBase {
         if (Utils.isSimulation()) {
             startSimThread();
         }
+
+        this.setDefaultCommand(off());
     }
 
     public static Intake getInstance() {
@@ -127,11 +132,12 @@ public class Intake extends SubsystemBase {
      * @param position Target extension in meters
      * @return command that moves the arm to the given position
      */
-    public Command setPosition(double position) {
+    private Command setPosition(double position) {
         return this.runOnce(() -> {
             this.targetPosition = position;
             this.extendMotor.setControl(
-                    this.motionMagic.withPosition(this.targetPosition / Constants.Intake.PINION_CIRCUMFERENCE));
+                    this.motionMagic.withPosition(
+                            this.targetPosition / Constants.Intake.PINION_CIRCUMFERENCE));
         }).withName("Set Intake Position");
     }
 
@@ -155,8 +161,9 @@ public class Intake extends SubsystemBase {
                 .withName("Set Intake position to Arm Out");
     }
 
-    public Command setRollerVolts(double voltage) {
+    private Command setRollerVolts(double voltage) {
         return this.runOnce(() -> rollerMotor.setVoltage(voltage))
+                .andThen(Commands.idle(this))
                 .withName("Set Intake Arm Roller Speed");
     }
 
@@ -213,8 +220,7 @@ public class Intake extends SubsystemBase {
             Constants.Intake.MIN_HEIGHT,
             Constants.Intake.MAX_HEIGHT,
             false,
-            0);
-;
+            0);;
     private final DCMotorSim rollerSim = new DCMotorSim(
             LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60Foc(1), 0.0005, 1),
             DCMotor.getKrakenX60Foc(1));
@@ -235,7 +241,8 @@ public class Intake extends SubsystemBase {
         this.extendMotor.getSimState().setRawRotorPosition(
                 pos / Constants.Intake.PINION_CIRCUMFERENCE * Constants.Intake.EXTENSION_GEAR_RATIO);
         this.extendMotor.getSimState()
-                .setRotorVelocity(vel / Constants.Intake.PINION_CIRCUMFERENCE * Constants.Intake.EXTENSION_GEAR_RATIO);
+                .setRotorVelocity(vel / Constants.Intake.PINION_CIRCUMFERENCE
+                        * Constants.Intake.EXTENSION_GEAR_RATIO);
 
         intakeSlide.setLength(0.5 + pos);
 

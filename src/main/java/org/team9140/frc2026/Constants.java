@@ -110,18 +110,18 @@ public class Constants {
         public static final int PINION_TEETH = 10;
         public static final double PINION_DP = 10;
         public static final double PINION_CIRCUMFERENCE = Units.inchesToMeters(PINION_TEETH / PINION_DP * Math.PI);
-        public static final double INTAKE_VOLTAGE = 10.0;
+        public static final double INTAKE_VOLTAGE = 12.0;
         public static final double INTAKE_OFF = 0.0;
 
         public static final double ROLLER_STATOR_CURRENT_LIMIT = 80.0;
-        public static final double EXTEND_STATOR_CURRENT_LIMIT = 10.0;
+        public static final double EXTEND_STATOR_CURRENT_LIMIT = 15.0;
 
         public static final double ROLLER_SUPPLY_CURRENT_LIMIT = 30.0;
         public static final double EXTEND_SUPPLY_CURRENT_LIMIT = 60.0;
 
         public static final double MOTION_MAGIC_CRUISE_VELOCITY = 64;
         public static final double MOTION_MAGIC_ACCELERATION = 64;
-        public static final double EXTEND_KP = 300;
+        public static final double EXTEND_KP = 200;
 
         public static final double ARM_IN_POSITION = 0.0;
         public static final double ARM_OUT_POSITION = 0.29;
@@ -165,12 +165,12 @@ public class Constants {
         public static final double KD = 50;
 
         public static final double ADJUST_VOLTAGE = 2.0;
-        public static final double FORWARD_SOFT_LIMIT_THRESHOLD = 0.25; // rot
-        public static final double REVERSE_SOFT_LIMIT_THRESHOLD = -0.25; // rot
+        public static final double FORWARD_SOFT_LIMIT_THRESHOLD = 0.3; // rot
+        public static final double REVERSE_SOFT_LIMIT_THRESHOLD = -0.3; // rot
         public static final double GEAR_RATIO = 90.0 / 10.0 * 50.0 / 11.0;
 
         public static final double OVERTURN_LOOKAHEAD_TIME = 1.5;
-        public static final Transform2d POSITION_TO_ROBOT = new Transform2d(-0.15, 0.2, new Rotation2d(-Math.PI));
+        public static final Transform2d POSITION_TO_ROBOT = new Transform2d(-0.178, -0.114, new Rotation2d(-Math.PI));
     }
 
     public static class Vision {

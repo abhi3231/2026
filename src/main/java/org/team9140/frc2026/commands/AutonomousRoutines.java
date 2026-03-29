@@ -16,6 +16,7 @@ import org.team9140.lib.FollowPath;
 import org.team9140.lib.Util;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -77,13 +78,21 @@ public class AutonomousRoutines {
     private DriverStation.Alliance lastAlliance = Alliance.Red;
     private String lastFetchedAuto = "";
 
+    private Translation2d targetHub = FieldConstants.Hub.CENTER_POINT.getTranslation();
+
     public Command getCommand() {
         if (Util.getAlliance().isPresent() && (!Util.getAlliance().get().equals(lastAlliance)
                 || (lastFetchedAuto != (lastFetchedAuto = autoChooser.getSelected())))) {
             lastAlliance = Util.getAlliance().get();
             switch (lastFetchedAuto) {
                 case "preload":
-                    return this.intake.armOut().andThen(new WaitCommand(2.0)).andThen(this.getShootCommand());
+                    if (Util.getAlliance().equals(Optional.of(DriverStation.Alliance.Red))) {
+                        targetHub = FieldConstants.Hub.RED_CENTER_POINT.getTranslation();
+                    } else {
+                        targetHub = FieldConstants.Hub.CENTER_POINT.getTranslation();
+                    }
+
+                    return this.intake.armOut().andThen(new WaitCommand(2.0)).andThen(shooter.aim(this.drivetrain::getCachedState, () -> targetHub));
                 case "sweep_middle_depot":
                     return runChoreoAuto("crossandsweep_Depot");
                 case "sweep_middle_outpost":

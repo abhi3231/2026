@@ -9,9 +9,10 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Hopper extends SubsystemBase{
+public class Hopper extends SubsystemBase {
     private final TalonFX spinnerMotor; // This is the spinny thingy
     private final TalonFX feederMotor; // This feeds to shooter
     private static Hopper instance;
@@ -19,7 +20,7 @@ public class Hopper extends SubsystemBase{
     private Hopper() {
         this.spinnerMotor = new TalonFX(Constants.Ports.HOPPER_SPINNER_MOTOR, Constants.Ports.CANIVORE);
         this.feederMotor = new TalonFX(Constants.Ports.HOPPER_FEEDER_MOTOR, Constants.Ports.CANIVORE);
-        
+
         CurrentLimitsConfigs spinnerCurrentLimits = new CurrentLimitsConfigs()
                 .withStatorCurrentLimit(Constants.Hopper.SPINNER_STATOR_CURRENT_LIMIT)
                 .withStatorCurrentLimitEnable(true)
@@ -31,7 +32,7 @@ public class Hopper extends SubsystemBase{
                 .withStatorCurrentLimitEnable(true)
                 .withSupplyCurrentLimit(Constants.Hopper.FEEDER_SUPPLY_CURRENT_LIMIT)
                 .withSupplyCurrentLimitEnable(true);
-        
+
         MotorOutputConfigs spinnerMotorOutputConfig = new MotorOutputConfigs()
                 .withInverted(InvertedValue.CounterClockwise_Positive);
 
@@ -48,6 +49,8 @@ public class Hopper extends SubsystemBase{
 
         this.spinnerMotor.getConfigurator().apply(spinnerMotorConfigs);
         this.feederMotor.getConfigurator().apply(feederMotorConfigs);
+
+        this.setDefaultCommand(off());
     }
 
     public static Hopper getInstance() {
@@ -56,8 +59,8 @@ public class Hopper extends SubsystemBase{
 
     private Command setSpeeds(double spinnerVoltage, double feederVoltage) {
         return this.runOnce(() -> this.spinnerMotor.setVoltage(spinnerVoltage))
-            .andThen(this.runOnce(() -> this.feederMotor.setVoltage(feederVoltage)))
-                .withName("Set Speed to Hopper");
+                .andThen(this.runOnce(() -> this.feederMotor.setVoltage(feederVoltage)))
+                .andThen(Commands.idle(this));
     }
 
     public Command feed() {

@@ -70,8 +70,8 @@ public class AutonomousRoutines {
 
     private Command getShootCommand() {
         return shooter.aim(this.drivetrain::getCachedState)
-                .alongWith(new WaitUntilCommand(shooter.yawIsAtPosition.and(shooter.shooterIsAtVelocity))
-                        .andThen(hopper.feed()));
+                .alongWith(new WaitUntilCommand(shooter.readyToShoot))
+                        .andThen(hopper.feed());
     }
 
     private Command getShootOffCommand() {

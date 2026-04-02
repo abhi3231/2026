@@ -217,7 +217,8 @@ public class Shooter extends SubsystemBase {
      * 3. calculate turret angle to make it to spot
      * 4. set yaw and flywheel motors
      */
-    public Command aim(Supplier<SwerveDriveState> chassisStateSupplier, Supplier<Translation2d> targetTranslationSupplier) {
+    public Command aim(Supplier<SwerveDriveState> chassisStateSupplier,
+            Supplier<Translation2d> targetTranslationSupplier) {
         return this.run(() -> {
             if (this.isManual)
                 return;
@@ -398,13 +399,15 @@ public class Shooter extends SubsystemBase {
                         * Constants.Shooter.FLYWHEEL_GEAR_RATIO / 2.0 / Math.PI);
     }
 
-    public final Trigger yawIsAtPosition = new Trigger(
+    private final Trigger yawIsAtPosition = new Trigger(
             () -> Util.epsilonEquals(this.yawMotor.getPosition(false).getValueAsDouble(),
                     this.yawMotorControl.Position, 0.01));
 
-    public final Trigger shooterIsAtVelocity = new Trigger(
+    private final Trigger shooterIsAtVelocity = new Trigger(
             () -> Util.epsilonEquals(this.shooterMotor.getVelocity(false).getValueAsDouble(),
                     this.shooterSpeedControl.Velocity, 5));
+
+    public final Trigger readyToShoot = new Trigger(yawIsAtPosition.and(shooterIsAtVelocity));
 
     public final Trigger yawWillOverturnSoon = new Trigger(() -> this.yawMotorControl.Position
             + this.targetYawRateOfChange

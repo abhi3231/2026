@@ -137,6 +137,8 @@ public class Constants {
         public static final double MECHANISM_HEIGHT = 2;
 
         public static final double SIM_PERIOD = 0.004;
+
+        public static final double TURN_OFF_TIME = 1;
     }
 
     public static class Hopper {
@@ -172,7 +174,7 @@ public class Constants {
         public static final double OVERTURN_LOOKAHEAD_TIME = 1.5;
         public static final Transform2d POSITION_TO_ROBOT = new Transform2d(-0.178, -0.114, new Rotation2d(-Math.PI));
 
-        public static double TURN_OFF_TIME = 0;
+        public static double TURN_OFF_TIME = 3;
     }
 
     public static class Vision {

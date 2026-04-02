@@ -15,6 +15,7 @@ import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
@@ -53,23 +54,29 @@ public class RobotContainer {
     
     this.shooter.setPoseSupplier(() -> this.drivetrain.getCachedState().Pose);
     SmartDashboard.putNumber("tuning RPM", 2500);
+    
     this.controller.rightBumper()
         .onTrue(this.intake.intake())
-        .debounce(Constants.Intake.TURN_OFF_TIME, DebounceType.kFalling).onFalse(this.intake.off());
-    this.controller.leftBumper()
+        .onFalse(this.intake.off());
+    
+      this.controller.leftBumper()
         .onTrue(this.intake.armIn().andThen(this.hopper.unjam()))
         .onFalse(this.intake.off().alongWith(this.hopper.off()));
+    
     this.controller.rightTrigger(0.7).onTrue(
         shooter.aim(this.drivetrain::getCachedState)
             .alongWith(new WaitUntilCommand(shooter.readyToShoot))
             .andThen(hopper.feed()))
-        .debounce(Constants.Turret.TURN_OFF_TIME, DebounceType.kFalling).onFalse(shooter.off().alongWith(hopper.off()));
+        .debounce(Constants.Turret.TURN_SHOOTER_OFF_TIME, DebounceType.kFalling)
+        .onFalse(shooter.off().alongWith(hopper.off()));
+    
     this.controller.rightTrigger(0.3).onTrue(shooter.aim(this.drivetrain::getCachedState))
-        .debounce(Constants.Turret.TURN_OFF_TIME, DebounceType.kFalling).onFalse(shooter.off());
+        .debounce(Constants.Turret.TURN_SHOOTER_OFF_TIME, DebounceType.kFalling).onFalse(shooter.off());
+    
     this.controller.rightTrigger()
         .and(this.controller.rightBumper().debounce(Constants.Intake.TURN_OFF_TIME, DebounceType.kFalling).negate())
         .onTrue(intake.armIn());
-    this.controller.x().onTrue(intake.armIn());
+    
     this.controller.y().onTrue(this.shooter.tuningSpeed(this.drivetrain::getCachedState, () -> SmartDashboard.getNumber("tuning RPM", 2500)));
     // this.controller.a().onTrue(this.shooter.aim(this.drivetrain::getCachedState));
     // this.controller.x().onTrue(this.shooter.off());
@@ -80,6 +87,9 @@ public class RobotContainer {
     // this.controller.a().whileTrue(this.drivetrain.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     // this.controller.b().whileTrue(this.drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
     // this.controller.x().whileTrue(this.drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+
+    this.hopper.feederOff
+        .onTrue(hopper.unjam().andThen(new WaitCommand(Constants.Hopper.REVERSE_FEEDER_TIME)).andThen(hopper.off()));
     drivetrain.setDefaultCommand(driveCommand);
 
     this.drivetrain.registerTelemetry(logger::telemeterize);

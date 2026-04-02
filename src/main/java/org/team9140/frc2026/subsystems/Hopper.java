@@ -11,16 +11,14 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class Hopper extends SubsystemBase {
-    private final TalonFX spinnerMotor; // This is the spinny thingy
-    private final TalonFX feederMotor; // This feeds to shooter
+    private final TalonFX spinnerMotor = new TalonFX(Constants.Ports.HOPPER_SPINNER_MOTOR, Constants.Ports.CANIVORE);
+    private final TalonFX feederMotor = new TalonFX(Constants.Ports.HOPPER_FEEDER_MOTOR, Constants.Ports.CANIVORE);
     private static Hopper instance;
 
     private Hopper() {
-        this.spinnerMotor = new TalonFX(Constants.Ports.HOPPER_SPINNER_MOTOR, Constants.Ports.CANIVORE);
-        this.feederMotor = new TalonFX(Constants.Ports.HOPPER_FEEDER_MOTOR, Constants.Ports.CANIVORE);
-
         CurrentLimitsConfigs spinnerCurrentLimits = new CurrentLimitsConfigs()
                 .withStatorCurrentLimit(Constants.Hopper.SPINNER_STATOR_CURRENT_LIMIT)
                 .withStatorCurrentLimitEnable(true)
@@ -77,4 +75,7 @@ public class Hopper extends SubsystemBase {
         return this.setSpeeds(0, 0)
                 .withName("Hopper Off");
     }
+    
+	public final Trigger feederOff = new Trigger(() -> this.feederMotor.getMotorVoltage().getValueAsDouble() == 0);
+
 }

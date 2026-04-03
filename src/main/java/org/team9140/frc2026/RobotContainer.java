@@ -70,12 +70,12 @@ public class RobotContainer {
         .onFalse(
             shooter.off().alongWith(hopper.reverseAndOff()));
 
-    this.controller.rightTrigger(0.3).debounce(Constants.Turret.TURN_SHOOTER_OFF_TIME, DebounceType.kFalling)
+    this.controller.rightTrigger(0.3).and(this.controller.rightTrigger(0.7).negate()).debounce(Constants.Turret.TURN_SHOOTER_OFF_TIME, DebounceType.kFalling)
         .onTrue(shooter.aim(this.drivetrain::getCachedState))
         .onFalse(shooter.off());
 
     this.controller.rightBumper().debounce(Constants.Intake.TURN_OFF_TIME, DebounceType.kFalling).negate()
-        .and(this.controller.rightTrigger()).onTrue(intake.armIn());
+        .and(this.controller.rightTrigger().debounce(Constants.Intake.TURN_OFF_TIME, DebounceType.kRising)).onTrue(intake.armIn());
 
     this.controller.y().onTrue(this.shooter.tuningSpeed(this.drivetrain::getCachedState, () -> SmartDashboard.getNumber("tuning RPM", 2500)));
     // this.controller.a().onTrue(this.shooter.aim(this.drivetrain::getCachedState));

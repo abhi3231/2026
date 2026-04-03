@@ -22,25 +22,25 @@ public class AimAlign {
     private static InterpolatingDoubleTreeMap lookupAirtimeFromDistance = new InterpolatingDoubleTreeMap();
 
     static {
-        lookupMotorSpeedFromDistance.put(1.86, 1900.0 / 60);
-        lookupMotorSpeedFromDistance.put(2.12, 2000.0 / 60);
-        lookupMotorSpeedFromDistance.put(2.67, 2250.0 / 60);
-        lookupMotorSpeedFromDistance.put(3.34, 2400 / 60.0);
-        lookupMotorSpeedFromDistance.put(3.52, 2500 / 60.0);
-        lookupMotorSpeedFromDistance.put(3.75, 2650.0 / 60);
-        lookupMotorSpeedFromDistance.put(4.06, 2700.0 / 60);
-        lookupMotorSpeedFromDistance.put(4.21, 2750 / 60.0);
-        lookupMotorSpeedFromDistance.put(4.48, 2800 / 60.0);
-        lookupMotorSpeedFromDistance.put(5.02, 3000.0 / 60);
-        lookupMotorSpeedFromDistance.put(5.449, 3150 / 60.0);
+        lookupAirtimeFromDistance.put(2.0245, 0.8266666666666666667);
+        lookupAirtimeFromDistance.put(2.3213, 1.0);
+        lookupAirtimeFromDistance.put(2.66, 1.06333333333333333);
+        lookupAirtimeFromDistance.put(2.91, 1.1666666666666667);
+        lookupAirtimeFromDistance.put(3.19, 1.29);
+        lookupAirtimeFromDistance.put(3.49, 1.41);
+        lookupAirtimeFromDistance.put(3.81, 1.4316666666666667);
+        lookupAirtimeFromDistance.put(4.17, 1.47333333333333);
+        lookupAirtimeFromDistance.put(4.45, 1.6166666666666667);
 
-
-        lookupAirtimeFromDistance.put(2.304, 0.95);
-        lookupAirtimeFromDistance.put(2.880, 1.04);
-        lookupAirtimeFromDistance.put(3.050, 1.15);
-        lookupAirtimeFromDistance.put(3.380, 1.20);
-        lookupAirtimeFromDistance.put(4.045, 1.27);
-        lookupAirtimeFromDistance.put(5.359, 1.35);
+        lookupMotorSpeedFromDistance.put(2.0245, 1900.0 / 60.0);
+        lookupMotorSpeedFromDistance.put(2.3213, 2050.0 / 60.0);
+        lookupMotorSpeedFromDistance.put(2.66, 2150.0 / 60.0);
+        lookupMotorSpeedFromDistance.put(2.91, 2300.0 / 60.0);
+        lookupMotorSpeedFromDistance.put(3.19, 2425.0 / 60.0);
+        lookupMotorSpeedFromDistance.put(3.49, 2575.0 / 60.0);
+        lookupMotorSpeedFromDistance.put(3.81, 2700.0 / 60.0);
+        lookupMotorSpeedFromDistance.put(4.17, 2825.0 / 60.0);
+        lookupMotorSpeedFromDistance.put(4.45, 3050.0 / 60.0);
     }
 
     static StructPublisher<Pose2d> effectivePosePublisher = NetworkTableInstance.getDefault().getStructTopic("Effective Pose", Pose2d.struct).publish();

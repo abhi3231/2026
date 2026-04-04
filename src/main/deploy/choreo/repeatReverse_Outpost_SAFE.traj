@@ -373,8 +373,5 @@
     {"t":7.38941, "x":4.35885, "y":0.65114, "heading":0.0, "vx":2.30321, "vy":0.52299, "omega":0.65867, "ax":0.0, "ay":0.0, "alpha":0.0, "fx":[0.0,0.0,0.0,0.0], "fy":[0.0,0.0,0.0,0.0]}],
   "splits":[0]
  },
- "events":[
-   {"name":"intakeOn", "from":{"target":1, "targetTimestamp":0.98853, "offset":{"exp":"-0.18 s", "val":-0.18}}, "event":{"type":"named", "data":{"name":"intakeOn"}}},
-   {"name":"shoot", "from":{"target":5, "targetTimestamp":4.78489, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"shoot"}}},
-   {"name":"shootOff", "from":{"target":8, "targetTimestamp":7.11672, "offset":{"exp":"0 s", "val":0.0}}, "event":{"type":"named", "data":{"name":"shootOff"}}}]
+ "events":[]
 }

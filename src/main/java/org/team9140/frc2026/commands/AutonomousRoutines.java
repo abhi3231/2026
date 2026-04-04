@@ -34,12 +34,10 @@ public class AutonomousRoutines {
     private final CommandSwerveDrivetrain drivetrain;
 
     private final Shooter shooter = Shooter.getInstance();
-    private final Climber climber = Climber.getInstance();
     private final Hopper hopper = Hopper.getInstance();
     private final Intake intake = Intake.getInstance();
 
     private final SendableChooser<String> autoChooser = new SendableChooser<>();
-    private final HashMap<String, Supplier<Command>> namedCommands = new HashMap<>();
     private static AutonomousRoutines instance;
 
     public static AutonomousRoutines getInstance(CommandSwerveDrivetrain drivetrain) {
@@ -69,20 +67,12 @@ public class AutonomousRoutines {
         autoChooser.addOption("2 Safe Passes Over Bump from Outpost", "two_pass_outpost_safe_bump");
         autoChooser.addOption("2 Safe Passes Over Bump from Depot", "two_pass_depot_safe_bump");
         SmartDashboard.putData(autoChooser);
-        namedCommands.put("shoot", this::getShootCommand);
-        namedCommands.put("intakeOn", intake::intake);
-        namedCommands.put("intakeOff", intake::off);
-        namedCommands.put("shootOff", this::getShootOffCommand);
     }
 
     private Command getShootCommand() {
         return shooter.aim(this.drivetrain::getCachedState)
                 .alongWith(new WaitUntilCommand(shooter.readyToShoot)
                         .andThen(hopper.feed()));
-    }
-
-    private Command getShootOffCommand() {
-        return shooter.off().andThen(hopper.off());
     }
 
     private DriverStation.Alliance lastAlliance = Alliance.Red;
@@ -101,7 +91,6 @@ public class AutonomousRoutines {
                     } else {
                         targetHub = FieldConstants.Hub.CENTER_POINT.getTranslation();
                     }
-
                     return this.intake.armOut().andThen(new WaitCommand(2.0)).andThen(shooter.aim(this.drivetrain::getCachedState, () -> targetHub));
                 case "depot_shoot_left":
                     return runChoreoAuto("depotShoot_Left").andThen(this.getShootCommand());
@@ -128,18 +117,24 @@ public class AutonomousRoutines {
                     return runChoreoAuto("repeatReverse_Depot_SAFE", false, true)
                     .andThen(runChoreoAuto("repeatReverse_Depot_Shallow", true, false));
                 case "one_pass_outpost_bump":
-                    return runChoreoAuto("onceReverseBump_Outpost");
+                    return intake.intake().alongWith(runChoreoAuto("onceReverseBump_Outpost").andThen(this.getShootCommand()));
                 case "one_pass_depot_bump":
-                    return runChoreoAuto("onceReverseBump_Depot");
+                    return intake.intake().alongWith(runChoreoAuto("onceReverseBump_Depot").andThen(this.getShootCommand()));
                 case "two_pass_outpost_bump":
-                    return runChoreoAuto("repeatReverseBump_Outpost_Deep", false, true)
-                    .andThen(runChoreoAuto("repeatReverseBump_Outpost_Shallow", true, false));
+                    return intake.intake().alongWith(runChoreoAuto("repeatReverseBump_Outpost_Deep", false, true)
+                    .andThen(this.getShootCommand().withTimeout(5))
+                    .andThen(runChoreoAuto("repeatBumpReset_Outpost"))
+                    .andThen(runChoreoAuto("repeatReverseBump_Outpost_Shallow", true, false))
+                    .andThen(this.getShootCommand()));
                 case "two_pass_depot_bump":
                     return runChoreoAuto("repeatReverseBump_Depot_Deep", false, true)
                     .andThen(runChoreoAuto("repeatReverseBump_Depot_Shallow", true, false));
                 case "two_pass_outpost_safe_bump":
-                    return runChoreoAuto("repeatReverseBump_Outpost_SAFE", false, true)
-                    .andThen(runChoreoAuto("repeatReverseBump_Outpost_Shallow", true, false));
+                    return intake.intake().alongWith(runChoreoAuto("repeatReverseBump_Outpost_SAFE", false, true)
+                    .andThen(this.getShootCommand().withTimeout(5))
+                    .andThen(runChoreoAuto("repeatBumpReset_Outpost"))
+                    .andThen(runChoreoAuto("repeatReverseBump_Outpost_Shallow", true, false))
+                    .andThen(this.getShootCommand()));
                 case "two_pass_depot_safe_bump":
                     return runChoreoAuto("repeatReverseBump_Depot_SAFE", false, true)
                     .andThen(runChoreoAuto("repeatReverseBump_Depot_Shallow", true, false));
@@ -157,31 +152,6 @@ public class AutonomousRoutines {
         return new PrintCommand("Doing Nothing");
     }
 
-    public Command climb(boolean left) {
-        Pose2d goalPos;
-        if (left) {
-            if (Util.getAlliance().equals(Optional.of(DriverStation.Alliance.Blue))) {
-                goalPos = FieldConstants.Tower.LEFT_UPRIGHT;
-            } else {
-                goalPos = FieldConstants.Tower.RED_LEFT_UPRIGHT;
-            }
-        } else {
-            if (Util.getAlliance().equals(Optional.of(DriverStation.Alliance.Blue))) {
-                goalPos = FieldConstants.Tower.RIGHT_UPRIGHT;
-            } else {
-                goalPos = FieldConstants.Tower.RED_RIGHT_UPRIGHT;
-            }
-        }
-        return this.drivetrain.goToPose(() -> goalPos)
-                .until(this.drivetrain.reachedPose)
-                .andThen(climber.extend()).andThen(climber.retract());
-    }
-
-    public void bindEventCommands(FollowPath path) {
-        for (Entry<String, Trigger> entry : path.getEvents().entrySet()) {
-            entry.getValue().onTrue(namedCommands.get(entry.getKey()).get());
-        }
-    }
 
     private final StructPublisher<Pose2d> initialPosePublisher = NetworkTableInstance.getDefault()
             .getStructTopic("Auto Path Initial Pose", Pose2d.struct).publish();
@@ -191,7 +161,6 @@ public class AutonomousRoutines {
                 this.drivetrain::followSample, Util.getAlliance().get(), drivetrain);
         // if (Robot.isSimulation() && reset)
             drivetrain.resetPose(path.getInitialPose());
-        this.bindEventCommands(path);
         initialPosePublisher.set(path.getInitialPose());
         return path.gimmeCommand(waitUntilAtFinalTarget);
     }

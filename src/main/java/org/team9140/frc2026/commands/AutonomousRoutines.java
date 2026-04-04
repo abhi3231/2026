@@ -77,8 +77,8 @@ public class AutonomousRoutines {
 
     private Command getShootCommand() {
         return shooter.aim(this.drivetrain::getCachedState)
-                .alongWith(new WaitUntilCommand(shooter.readyToShoot))
-                        .andThen(hopper.feed());
+                .alongWith(new WaitUntilCommand(shooter.readyToShoot)
+                        .andThen(hopper.feed()));
     }
 
     private Command getShootOffCommand() {
@@ -189,7 +189,7 @@ public class AutonomousRoutines {
     public Command runChoreoAuto(String pathame, boolean waitUntilAtFinalTarget, boolean reset) {
         FollowPath path = new FollowPath(pathame, () -> this.drivetrain.getState().Pose,
                 this.drivetrain::followSample, Util.getAlliance().get(), drivetrain);
-        if (Robot.isSimulation() && reset)
+        // if (Robot.isSimulation() && reset)
             drivetrain.resetPose(path.getInitialPose());
         this.bindEventCommands(path);
         initialPosePublisher.set(path.getInitialPose());

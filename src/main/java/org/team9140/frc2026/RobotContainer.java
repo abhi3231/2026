@@ -73,7 +73,7 @@ public class RobotContainer {
 
     wantIntake.whileTrue(this.intake.intake());
 
-    wantShoot.and(shooter.readyToShoot).and(wantIntake.negate()).debounce(2.0).onTrue(this.intake.squeeze());
+    //ewantShoot.and(shooter.readyToShoot).and(wantIntake.negate()).debounce(2.0).onTrue(this.intake.squeeze());
 
     this.controller.y().onTrue(this.shooter.tuningSpeed(this.drivetrain::getCachedState, () -> SmartDashboard.getNumber("tuning RPM", 2500)));
     // this.controller.a().onTrue(this.shooter.aim(this.drivetrain::getCachedState));

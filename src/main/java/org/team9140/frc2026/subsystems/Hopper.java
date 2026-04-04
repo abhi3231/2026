@@ -28,6 +28,10 @@ public class Hopper extends SubsystemBase {
             LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60Foc(1), 0.0005, 1),
             DCMotor.getKrakenX60Foc(1));
 
+    private final DCMotorSim feederSim = new DCMotorSim(
+            LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60Foc(1), 0.0005, 1),
+            DCMotor.getKrakenX60Foc(1));
+
     private Hopper() {
         CurrentLimitsConfigs spinnerCurrentLimits = new CurrentLimitsConfigs()
                 .withStatorCurrentLimit(Constants.Hopper.SPINNER_STATOR_CURRENT_LIMIT)
@@ -124,6 +128,15 @@ public class Hopper extends SubsystemBase {
         this.spinnerMotor.getSimState().setRotorVelocity(this.spinnerSim.getAngularVelocityRPM() / 60.0);
         this.spinnerMotor.getSimState().setRotorAcceleration(
                 this.spinnerSim.getAngularAccelerationRadPerSecSq() / 2.0 / Math.PI);
+        
+        double feederMotorVolts = this.feederMotor.getSimState().getMotorVoltage();
+        SmartDashboard.putNumber("feeder volts", feederMotorVolts);
+        this.spinnerSim.setInputVoltage(feederMotorVolts);
+        this.spinnerSim.update(deltaTime);
+        this.spinnerMotor.getSimState().setRawRotorPosition(this.feederSim.getAngularPositionRotations());
+        this.spinnerMotor.getSimState().setRotorVelocity(this.feederSim.getAngularVelocityRPM() / 60.0);
+        this.spinnerMotor.getSimState().setRotorAcceleration(
+                this.feederSim.getAngularAccelerationRadPerSecSq() / 2.0 / Math.PI);
     }
 
 }

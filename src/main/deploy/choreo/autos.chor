@@ -29,8 +29,8 @@
    },
    "Blue_Depot_Bump_End":{
     "x":{
-     "exp":"3 m",
-     "val":3.0
+     "exp":"2 m",
+     "val":2.0
     },
     "y":{
      "exp":"5.6 m",
@@ -99,8 +99,8 @@
    },
    "Blue_Outpost_Bump_End":{
     "x":{
-     "exp":"2.7913107872009277 m",
-     "val":2.7913107872009277
+     "exp":"2 m",
+     "val":2.0
     },
     "y":{
      "exp":"2.317690372467041 m",
@@ -388,16 +388,16 @@
   },
   "bumper":{
    "front":{
-    "exp":"16 in",
-    "val":0.4064
+    "exp":"17 in",
+    "val":0.4318
    },
    "side":{
-    "exp":"16 in",
-    "val":0.4064
+    "exp":"17 in",
+    "val":0.4318
    },
    "back":{
-    "exp":"16 in",
-    "val":0.4064
+    "exp":"17 in",
+    "val":0.4318
    }
   },
   "differentialTrackWidth":{

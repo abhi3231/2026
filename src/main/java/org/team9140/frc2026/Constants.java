@@ -78,6 +78,8 @@ public class Constants {
         public static final double SHOOTER_KD = 0;
 
         public static final double FLYWHEEL_GEAR_RATIO = 26.0 / 24.0;
+
+        public static final double AUTO_IDLE_TIMESTAMP = 2;
     }
 
     public static class Climber {

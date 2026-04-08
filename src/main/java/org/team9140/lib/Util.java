@@ -5,6 +5,7 @@ import java.util.Optional;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 
@@ -41,6 +42,12 @@ public class Util {
                 a.getRotation(), b.getRotation(), ROTATION_E);
 
         return transValid && rotValid;
+    }
+
+    public static boolean epsilonEquals(ChassisSpeeds a, ChassisSpeeds b) {
+        return epsilonEquals(a.omegaRadiansPerSecond, b.omegaRadiansPerSecond, ROTATION_E) &&
+               epsilonEquals(a.vxMetersPerSecond, b.vxMetersPerSecond, TRANSLATION_E) &&
+               epsilonEquals(a.vyMetersPerSecond, b.vyMetersPerSecond, TRANSLATION_E);
     }
 
     public static boolean rotationEpsilonEquals(Rotation2d a, Rotation2d b, double epsilon) {

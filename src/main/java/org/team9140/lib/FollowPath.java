@@ -77,10 +77,17 @@ public class FollowPath {
     }
 
     public Trigger atTime(double timestamp) {
+        if (timestamp < 0 || timestamp > this.trajectory.getTotalTime()) {
+            throw new IllegalArgumentException(timestamp + "is not within ()");
+        }
         return new Trigger(
                 loop,
                 () -> timer.get() >= timestamp)
                 .and(activeTrigger);
+    }
+
+    public Trigger atTimeFromEnd(double timestampFromEnd) {
+        return atTime(Math.max(0,this.trajectory.getTotalTime() - timestampFromEnd));
     }
 
     public Trigger atPose(Pose2d pose, double toleranceMeters, double toleranceRadians) {

@@ -1,13 +1,9 @@
 package org.team9140.frc2026.commands;
 
-import java.util.HashMap;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import org.team9140.frc2026.FieldConstants;
 import org.team9140.frc2026.Robot;
-import org.team9140.frc2026.subsystems.Climber;
 import org.team9140.frc2026.subsystems.CommandSwerveDrivetrain;
 import org.team9140.frc2026.subsystems.Hopper;
 import org.team9140.frc2026.subsystems.Intake;
@@ -24,11 +20,9 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class AutonomousRoutines {
     private final CommandSwerveDrivetrain drivetrain;
@@ -48,8 +42,6 @@ public class AutonomousRoutines {
         this.drivetrain = drivetrain;
         autoChooser.setDefaultOption("Do Nothing", "nothing");
         autoChooser.addOption("Shoot Preload", "preload");
-        autoChooser.addOption("Sweep Middle From Depot", "sweep_middle_depot");
-        autoChooser.addOption("Sweep Middle From Outpost", "sweep_middle_outpost");
         autoChooser.addOption("Score from Depot starting Middle", "score_from_depot");
         autoChooser.addOption("Score from Depot starting Left", "depot_shoot_left");
         autoChooser.addOption("1 Pass From Depot", "one_pass_depot");
@@ -93,53 +85,70 @@ public class AutonomousRoutines {
                     }
                     return this.intake.armOut().andThen(new WaitCommand(2.0)).andThen(shooter.aim(this.drivetrain::getCachedState, () -> targetHub));
                 case "depot_shoot_left":
-                    return runChoreoAuto("depotShoot_Left").andThen(this.getShootCommand());
-                case "sweep_middle_depot":
-                    return runChoreoAuto("crossandsweep_Depot");
-                case "sweep_middle_outpost":
-                    return runChoreoAuto("crossandsweep_Outpost");
+                    return intake.intake().alongWith(runChoreoAuto("depotShoot_Left").andThen(this.getShootCommand().asProxy()));
                 case "score_from_depot":
-                    return runChoreoAuto("depotShoot");
+                    return intake.intake().alongWith(runChoreoAuto("depotShoot").andThen(this.getShootCommand().asProxy()));
                 case "one_pass_outpost":
-                    return runChoreoAuto("onceReverse_Outpost");
+                    return intake.intake().alongWith(runChoreoAuto("Trench_Outpost_Deep").andThen(this.getShootCommand().asProxy()));
                 case "one_pass_depot":
-                    return runChoreoAuto("onceReverse_Depot");
+                    return intake.intake().alongWith(runChoreoAuto("Trench_Depot_Deep").andThen(this.getShootCommand().asProxy()));
                 case "two_pass_outpost":
-                    return runChoreoAuto("repeatReverse_Outpost_Deep", false, true)
-                    .andThen(runChoreoAuto("repeatReverse_Outpost_Shallow", true, false));
+                    return intake.intake().alongWith(runChoreoAuto("Trench_Outpost_Deep", false, true)
+                    .andThen(this.getShootCommand().withTimeout(5).asProxy())
+                    .andThen(runChoreoAuto("Trench_Reset_Outpost", false, false))
+                    .andThen(runChoreoAuto("Trench_Outpost_Shallow", true, false))
+                    .andThen(this.getShootCommand().asProxy()));
                 case "two_pass_depot":
-                    return runChoreoAuto("repeatReverse_Depot_Deep", false, true)
-                    .andThen(runChoreoAuto("repeatReverse_Depot_Shallow", true, false));
+                    return intake.intake().alongWith(runChoreoAuto("Trench_Depot_Deep", false, true)
+                    .andThen(this.getShootCommand().withTimeout(5).asProxy())
+                    .andThen(runChoreoAuto("Trench_Reset_Depot", false, false))
+                    .andThen(runChoreoAuto("Trench_Depot_Shallow", true, false))
+                    .andThen(this.getShootCommand().withTimeout(5).asProxy()));
                 case "two_pass_outpost_safe":
-                    return runChoreoAuto("repeatReverse_Outpost_SAFE", false, true)
-                    .andThen(runChoreoAuto("repeatReverse_Outpost_Shallow", true, false));
+                    return intake.intake().alongWith(runChoreoAuto("Trench_Outpost_Shallow", false, true)
+                    .andThen(this.getShootCommand().withTimeout(5).asProxy())
+                    .andThen(runChoreoAuto("Trench_Reset_Outpost", false, false))
+                    .andThen(runChoreoAuto("Trench_Outpost_Shallow", true, false))
+                    .andThen(this.getShootCommand().asProxy()));
                 case "two_pass_depot_safe":
-                    return runChoreoAuto("repeatReverse_Depot_SAFE", false, true)
-                    .andThen(runChoreoAuto("repeatReverse_Depot_Shallow", true, false));
+                    return intake.intake().alongWith(runChoreoAuto("Trench_Depot_Shallow", false, true)
+                    .andThen(this.getShootCommand().withTimeout(5).asProxy())
+                    .andThen(runChoreoAuto("Trench_Reset_Depot", false, false))
+                    .andThen(runChoreoAuto("Trench_Depot_Shallow", true, false))
+                    .andThen(this.getShootCommand().withTimeout(5).asProxy()));
                 case "one_pass_outpost_bump":
-                    return intake.intake().alongWith(runChoreoAuto("onceReverseBump_Outpost").andThen(this.getShootCommand()));
+                    return intake.intake().alongWith(runChoreoAuto("Bump_Outpost_Deep").andThen(this.getShootCommand().asProxy()));
                 case "one_pass_depot_bump":
-                    return intake.intake().alongWith(runChoreoAuto("onceReverseBump_Depot").andThen(this.getShootCommand()));
+                    return intake.intake().alongWith(runChoreoAuto("Bump_Depot_Deep").andThen(this.getShootCommand().asProxy()));
                 case "two_pass_outpost_bump":
-                    return intake.intake().alongWith(runChoreoAuto("repeatReverseBump_Outpost_Deep", false, true)
-                    .andThen(this.getShootCommand().withTimeout(5))
-                    .andThen(runChoreoAuto("repeatBumpReset_Outpost"))
-                    .andThen(runChoreoAuto("repeatReverseBump_Outpost_Shallow", true, false))
-                    .andThen(this.getShootCommand()));
+                    return intake.intake().alongWith(runChoreoAuto("Bump_Outpost_Deep", true, true)
+                    .andThen(this.getShootCommand().withTimeout(5).asProxy())
+                    .andThen(runChoreoAuto("Bump_Reset_Outpost", false, false))
+                    .andThen(runChoreoAuto("Bump_Outpost_Shallow", true, false))
+                    .andThen(this.getShootCommand().asProxy()));
                 case "two_pass_depot_bump":
-                    return runChoreoAuto("repeatReverseBump_Depot_Deep", false, true)
-                    .andThen(runChoreoAuto("repeatReverseBump_Depot_Shallow", true, false));
+                    return intake.intake().alongWith(runChoreoAuto("Bump_Depot_Deep", false, true)
+                    .andThen(this.getShootCommand().withTimeout(5).asProxy())
+                    .andThen(runChoreoAuto("Bump_Reset_Depot", false, false))
+                    .andThen(runChoreoAuto("Bump_Depot_Shallow", true, false))
+                    .andThen(this.getShootCommand().asProxy()));
                 case "two_pass_outpost_safe_bump":
-                    return intake.intake().alongWith(runChoreoAuto("repeatReverseBump_Outpost_SAFE", false, true)
-                    .andThen(this.getShootCommand().withTimeout(5))
-                    .andThen(runChoreoAuto("repeatBumpReset_Outpost"))
-                    .andThen(runChoreoAuto("repeatReverseBump_Outpost_Shallow", true, false))
-                    .andThen(this.getShootCommand()));
+                    return intake.intake().alongWith(runChoreoAuto("Bump_Outpost_Shallow", false, true)
+                    .andThen(this.getShootCommand().withTimeout(5).asProxy())
+                    .andThen(runChoreoAuto("Bump_Reset_Outpost", false, false))
+                    .andThen(runChoreoAuto("Bump_Outpost_Shallow", true, false))
+                    .andThen(this.getShootCommand().asProxy()));
                 case "two_pass_depot_safe_bump":
-                    return runChoreoAuto("repeatReverseBump_Depot_SAFE", false, true)
-                    .andThen(runChoreoAuto("repeatReverseBump_Depot_Shallow", true, false));
+                    return intake.intake().alongWith(runChoreoAuto("Bump_Depot_Shallow", false, true)
+                    .andThen(this.getShootCommand().withTimeout(5).asProxy())
+                    .andThen(runChoreoAuto("Bump_Reset_Depot", false, false))
+                    .andThen(runChoreoAuto("Bump_Depot_Shallow", true, false))
+                    .andThen(this.getShootCommand().asProxy()));
                 case "one_pass_depot_then_depot_shoot":
-                    return runChoreoAuto("onceReverse_Depot", false, true).andThen(new WaitCommand(8.0)).andThen(runChoreoAuto("depotShoot_Left"));
+                    return intake.intake().alongWith(runChoreoAuto("Trench_Depot_Deep", false, true)
+                    .andThen(this.getShootCommand().withTimeout(5).asProxy())
+                    .andThen(runChoreoAuto("depotShoot_Left", true, false))
+                    .andThen(this.getShootCommand().asProxy()));
                 default:
                     return doNothing();
             }
@@ -159,7 +168,7 @@ public class AutonomousRoutines {
     public Command runChoreoAuto(String pathame, boolean waitUntilAtFinalTarget, boolean reset) {
         FollowPath path = new FollowPath(pathame, () -> this.drivetrain.getState().Pose,
                 this.drivetrain::followSample, Util.getAlliance().get(), drivetrain);
-        // if (Robot.isSimulation() && reset)
+        if (Robot.isSimulation() && reset)
             drivetrain.resetPose(path.getInitialPose());
         initialPosePublisher.set(path.getInitialPose());
         return path.gimmeCommand(waitUntilAtFinalTarget);
